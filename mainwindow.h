@@ -15,6 +15,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+        void realtimeDataSlot();
+
 private:
     Ui::MainWindow *ui;
 };
