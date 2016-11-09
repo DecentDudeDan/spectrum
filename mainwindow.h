@@ -17,6 +17,7 @@ public:
     ~MainWindow();
     void createDataPoints(std::complex<double> *points, QVector<double> &xValue, QVector<double> &fftPoints);
     void clearAndRecreateGraph();
+    void doStuff();
 
 private slots:
         void realtimeDataSlot();

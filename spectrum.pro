@@ -19,5 +19,6 @@ HEADERS  += mainwindow.h \
     qcustomplot.h
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += "/home/dan/Documents/seniorproject/fftw-3.3.5"
-LIBS''= -lfftw3
+LIBS += -L/home/dan/Documents/seniorproject/fftw-3.3.5 -L/home/dan/Documents/seniorproject/libiio \
+-lfftw3 \
+-liio
