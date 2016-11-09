@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <cstddef>
 #include <math.h>
-#define N 8
+#define N 32
 
 int main()
 {
@@ -16,7 +16,7 @@ int main()
         for (i = 0; i < N; i++) 
         {
         in[i][0] = cos(3 * 2*M_PI*i/N);
-        in[i][1] = 0;
+        in[i][1] = sin(3 * 2*M_PI*i/N);
         }
 
     fftw_execute(p);
