@@ -5,7 +5,6 @@
 #include <iostream>
 #include <math.h>
 #include <QVector>
-#include <QtConcurrent/QtConcurrent>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -41,7 +40,6 @@ static struct iio_buffer  *rxbuf = NULL;
 static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
-bool firstRun = true;
 
 QQueue<std::complex<double>> points;
 QVector<double> xValue;
@@ -100,37 +98,28 @@ void MainWindow::realtimeDataSlot()
     static QTime time(QTime::currentTime());
     QVector<double> fftPoints;
     double key;
-    static double lastPointKey = 0;
-    // calculate two new data points:
 
-    if(firstRun) {
+    // generate a vector of double's for the x Axis
+    if(xValue.isEmpty()) {
         for(int i = 0; i < blah; i++) {
             xValue.push_back(i);
         }
-        firstRun = false;
     }
 
     if(points.size() > 256)  {
-        std::cout << "The first 10 points are: ";
-        for (int j = 0; j < 10; j++) {
-
-        }
-        createDataPoints(fftPoints);
+        fftPoints = createDataPoints();
     }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
     // add data to lines:
-    if (xValue.size() == fftPoints.size()) {
+    if (xValue.size() == fftPoints.size() && fftPoints.size() == 256) {
         ui->customPlot1->graph(0)->setData(xValue, fftPoints);
     }
     // TODO: add event for changing graph color based on value of graph.
 
     // rescale value (vertical) axis to fit the current data:
     ui->customPlot1->graph(0)->rescaleValueAxis();
-    lastPointKey = key;
 
-    // make key axis range scroll with the data:
-    //ui->customPlot1->xAxis->setRange(key, 5, Qt::AlignRight);
     ui->customPlot1->replot();
     // calculate frames per second and add it to the ui window at bottom of the screen:
     static double lastFpsKey;
@@ -149,9 +138,10 @@ void MainWindow::realtimeDataSlot()
 
 }
 
-void MainWindow::createDataPoints(QVector<double> &fftPoints)
+QVector<double> MainWindow::createDataPoints()
 {
     int i;
+    QVector<double> fftPoints;
     fftw_complex in[blah], out[blah];
     fftw_plan p;
 
@@ -161,13 +151,13 @@ void MainWindow::createDataPoints(QVector<double> &fftPoints)
         for (i = 0; i < blah; i++)
         {
             std::complex<double> current = points.dequeue();
+            std::cout << "Size of queue: " << points.size() << std::endl;
             in[i][0] = current.real();
             in[i][1] = current.imag();
         }
     }
 
     fftw_execute(p);
-    fftPoints.clear();
 
     for (i = 0; i < blah; i++)
     {
@@ -175,6 +165,8 @@ void MainWindow::createDataPoints(QVector<double> &fftPoints)
     }
 
     fftw_destroy_plan(p);
+
+    return fftPoints;
 
 }
 

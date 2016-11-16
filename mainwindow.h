@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <complex>
+#include <QtConcurrent/QtConcurrent>
 
 namespace Ui {
 class MainWindow;
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void createDataPoints(QVector<double> &fftPoints);
+    QVector<double> createDataPoints();
     static void doStuff();
 
 private Q_SLOTS:

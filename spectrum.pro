@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+QT += widgets concurrent
+greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 
 TARGET = spectrum
 TEMPLATE = app
