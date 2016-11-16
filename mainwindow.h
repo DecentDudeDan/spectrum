@@ -15,11 +15,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void createDataPoints(std::complex<double> *points, QVector<double> &xValue, QVector<double> &fftPoints);
-    void clearAndRecreateGraph();
-    void doStuff();
+    void createDataPoints(QVector<double> &fftPoints);
+    static void doStuff();
 
-private slots:
+private Q_SLOTS:
         void realtimeDataSlot();
 
 private:

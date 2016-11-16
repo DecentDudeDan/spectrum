@@ -5,6 +5,7 @@
 #include <iostream>
 #include <math.h>
 #include <QVector>
+#include <QtConcurrent/QtConcurrent>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -40,7 +41,10 @@ static struct iio_buffer  *rxbuf = NULL;
 static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
+bool firstRun = true;
 
+QQueue<std::complex<double>> points;
+QVector<double> xValue;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -76,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
 
-    doStuff();
+    QFuture<void> future = QtConcurrent::run(doStuff);
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     QTimer *dataTimer = new QTimer(this);
@@ -94,36 +98,36 @@ MainWindow::~MainWindow()
 void MainWindow::realtimeDataSlot()
 {
     static QTime time(QTime::currentTime());
+    QVector<double> fftPoints;
     double key;
-    int Low = 1;
-    int High = 10;
-    int randNum;
     static double lastPointKey = 0;
     // calculate two new data points:
 
-    randNum = (qrand() % ((High + 1) - Low) + Low);
-    std::complex<double> *newPoints = new std::complex<double>[blah];
-
-    for (int i = 0; i < blah; i++)
-    {
-        newPoints[i] = cos(1 * 2*M_PI*i/(blah));
+    if(firstRun) {
+        for(int i = 0; i < blah; i++) {
+            xValue.push_back(i);
+        }
+        firstRun = false;
     }
 
-    QVector<double> fftPoints;
-    QVector<double> xValue;
-    createDataPoints(newPoints, xValue, fftPoints);
+    if(points.size() > 256)  {
+        std::cout << "The first 10 points are: ";
+        for (int j = 0; j < 10; j++) {
+
+        }
+        createDataPoints(fftPoints);
+    }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
-    if (key-lastPointKey > 0.0002) // at most add point every 20 ms
-    {
-        // add data to lines:
+    // add data to lines:
+    if (xValue.size() == fftPoints.size()) {
         ui->customPlot1->graph(0)->setData(xValue, fftPoints);
-        // TODO: add event for changing graph color based on value of graph.
-
-        // rescale value (vertical) axis to fit the current data:
-        ui->customPlot1->graph(0)->rescaleValueAxis();
-        lastPointKey = key;
     }
+    // TODO: add event for changing graph color based on value of graph.
+
+    // rescale value (vertical) axis to fit the current data:
+    ui->customPlot1->graph(0)->rescaleValueAxis();
+    lastPointKey = key;
 
     // make key axis range scroll with the data:
     //ui->customPlot1->xAxis->setRange(key, 5, Qt::AlignRight);
@@ -143,10 +147,9 @@ void MainWindow::realtimeDataSlot()
         frameCount = 0;
     }
 
-    delete newPoints;
 }
 
-void MainWindow::createDataPoints(std::complex<double> *points, QVector<double> &xValue, QVector<double> &fftPoints)
+void MainWindow::createDataPoints(QVector<double> &fftPoints)
 {
     int i;
     fftw_complex in[blah], out[blah];
@@ -154,18 +157,21 @@ void MainWindow::createDataPoints(std::complex<double> *points, QVector<double> 
 
     p = fftw_plan_dft_1d(blah, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    for (i = 0; i < blah; i++)
-    {
-        in[i][0] = points[i].real();
-        in[i][1] = points[i].imag();
+    if(points.size() > 256) {
+        for (i = 0; i < blah; i++)
+        {
+            std::complex<double> current = points.dequeue();
+            in[i][0] = current.real();
+            in[i][1] = current.imag();
+        }
     }
 
     fftw_execute(p);
+    fftPoints.clear();
 
     for (i = 0; i < blah; i++)
     {
         fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
-        xValue.push_back(i);
     }
 
     fftw_destroy_plan(p);
@@ -347,7 +353,7 @@ void MainWindow::doStuff()
         perror("Could not create RX buffer");
         shutdown();
     }
-    txbuf = iio_device_create_buffer(tx, 1024*1024, false);
+    txbuf = iio_device_create_buffer(tx, 512, false);
     if (!txbuf) {
         perror("Could not create TX buffer");
         shutdown();
@@ -357,7 +363,7 @@ void MainWindow::doStuff()
     while (!stop)
     {
         ssize_t nbytes_rx, nbytes_tx;
-        void *p_dat, *p_end;
+        void *p_dat, *p_end, *p_dat_start;
         ptrdiff_t p_inc;
 
         // Schedule TX buffer
@@ -371,12 +377,16 @@ void MainWindow::doStuff()
         // READ: Get pointers to RX buf and read IQ from RX buf port 0
         p_inc = iio_buffer_step(rxbuf);
         p_end = iio_buffer_end(rxbuf);
-        for (p_dat = iio_buffer_first(rxbuf, rx0_i); p_dat < p_end; p_dat += p_inc) {
-            // Example: swap I and Q
-            const int16_t i = ((int16_t*)p_dat)[0]; // Real (I)
-            const int16_t q = ((int16_t*)p_dat)[1]; // Imag (Q)
-            ((int16_t*)p_dat)[0] = q;
-            ((int16_t*)p_dat)[1] = i;
+        p_dat_start = iio_buffer_first(rxbuf, rx0_i);
+
+        for (p_dat = p_dat_start; p_dat < p_dat_start+256*p_inc; p_dat += p_inc) {
+            const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
+            const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)
+            points.enqueue({i, q});
+        }
+
+        if (points.size() > 256) {
+            std::cout << "Got Data and the queue is of size: " << points.size() << "." << std::endl;
         }
 
         // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
@@ -384,8 +394,8 @@ void MainWindow::doStuff()
         p_end = iio_buffer_end(txbuf);
         for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
             // Example: fill with zeros
-            ((int16_t*)p_dat)[0] = 0; // Real (I)
-            ((int16_t*)p_dat)[1] = 0; // Imag (Q)
+            ((int16_t*)p_dat)[0] = 1500; // Real (I)
+            ((int16_t*)p_dat)[1] = 1500; // Imag (Q)
         }
 
         // Sample counter increment and status output
