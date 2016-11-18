@@ -5,18 +5,20 @@
 #-------------------------------------------------
 
 QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+QT += widgets concurrent
+greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 
 TARGET = spectrum
 TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    concurrentqueue.cpp
 
 HEADERS  += mainwindow.h \
-    qcustomplot.h
+    qcustomplot.h \
+    concurrentqueue.h
 FORMS    += mainwindow.ui
 
 LIBS += -L/home/dan/Documents/seniorproject/fftw-3.3.5 -L/home/dan/Documents/seniorproject/libiio \
