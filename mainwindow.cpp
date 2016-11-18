@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <iio.h>
+#include "concurrentqueue.h"
 #define blah 256
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
@@ -41,7 +42,7 @@ static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
 
-QQueue<std::complex<double>> points;
+ConcurrentQueue points;
 QVector<double> xValue;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -151,10 +152,12 @@ QVector<double> MainWindow::createDataPoints()
         for (i = 0; i < blah; i++)
         {
             std::complex<double> current = points.dequeue();
-            std::cout << "Size of queue: " << points.size() << std::endl;
             in[i][0] = current.real();
             in[i][1] = current.imag();
+            points.unlock();
+
         }
+        std::cout << "Size of queue after creating points: " << points.size() << std::endl;
     }
 
     fftw_execute(p);
@@ -371,7 +374,7 @@ void MainWindow::doStuff()
         p_end = iio_buffer_end(rxbuf);
         p_dat_start = iio_buffer_first(rxbuf, rx0_i);
 
-        for (p_dat = p_dat_start; p_dat < p_dat_start+256*p_inc; p_dat += p_inc) {
+        for (p_dat = p_dat_start; p_dat < p_dat_start+1024*p_inc; p_dat += p_inc) {
             const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
             const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)
             points.enqueue({i, q});
