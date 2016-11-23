@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <iio.h>
+#include <ctime>
 #include "concurrentqueue.h"
 #define blah 256
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
@@ -51,9 +52,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+   /* QPalette Pal(palette());
+    // set black background
+    Pal.setColor(QPalette::Background, Qt::black);
+    ui->centralWidget->setAutoFillBackground(true);
+    ui->centralWidget->setPalette(Pal);
+    ui->centralWidget->show();*/
+
+    /*QPalette Pal2(palette());
+    // set black background
+    Pal2.setColor(QPalette::Background, Qt::lightGray);
+    ui->widget_2->setAutoFillBackground(true);
+    ui->widget_2->setPalette(Pal);
+    ui->widget_2->show();*/
+
+    ui->customPlot1->setBackground(Qt::lightGray);
+    ui->customPlot1->axisRect()->setBackground(Qt::black);
+
+    ui->customPlot2->setBackground(Qt::lightGray);
+    ui->customPlot2->axisRect()->setBackground(Qt::black);
+
+
     // add a graph to the plot and set it's color to blue:
     ui->customPlot1->addGraph();
-    ui->customPlot1->graph(0)->setPen(QPen(QColor(40, 110, 255)));
+    ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
     ui->customPlot2->addGraph();
