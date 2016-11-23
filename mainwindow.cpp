@@ -14,7 +14,7 @@
 #include <iio.h>
 #include <ctime>
 #include "concurrentqueue.h"
-#define blah 256
+#define numPoints 2048
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-   /* QPalette Pal(palette());
+    /* QPalette Pal(palette());
     // set black background
     Pal.setColor(QPalette::Background, Qt::black);
     ui->centralWidget->setAutoFillBackground(true);
@@ -86,9 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
     timeTicker->setTimeFormat("%h:%m:%s");
-    ui->customPlot1->xAxis->setRange(0,blah);
+    ui->customPlot1->xAxis->setRange(0,numPoints);
     ui->customPlot1->axisRect()->setupFullAxesBox();
-    ui->customPlot1->yAxis->setRange(-1.5, 1.5);
+    ui->customPlot1->yAxis->setRange(1, 3000000);
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
     ui->customPlot1->yAxis->setTicker(logTicker);
 
@@ -121,29 +121,36 @@ void MainWindow::realtimeDataSlot()
     static QTime time(QTime::currentTime());
     QVector<double> fftPoints;
     double key;
+    static double lastPointKey;
 
     // generate a vector of double's for the x Axis
     if(xValue.isEmpty()) {
-        for(int i = 0; i < blah; i++) {
+        for(int i = 0; i < numPoints; i++) {
             xValue.push_back(i);
         }
     }
 
-    if(points.size() > 256)  {
+    if(points.size() > numPoints)  {
         fftPoints = createDataPoints();
     }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
-    // add data to lines:
-    if (xValue.size() == fftPoints.size() && fftPoints.size() == 256) {
-        ui->customPlot1->graph(0)->setData(xValue, fftPoints);
+
+    if (key-lastPointKey > 0.002)
+    {
+        // add data to lines:
+        if (xValue.size() == fftPoints.size() && fftPoints.size() == numPoints) {
+            ui->customPlot1->graph(0)->setData(xValue, fftPoints);
+        }
+        // TODO: add event for changing graph color based on value of graph.
+
+        // rescale value (vertical) axis to fit the current data:
+        //ui->customPlot1->graph(0)->rescaleValueAxis();
+
+        ui->customPlot1->replot();
+        lastPointKey = key;
     }
-    // TODO: add event for changing graph color based on value of graph.
 
-    // rescale value (vertical) axis to fit the current data:
-    ui->customPlot1->graph(0)->rescaleValueAxis();
-
-    ui->customPlot1->replot();
     // calculate frames per second and add it to the ui window at bottom of the screen:
     static double lastFpsKey;
     static int frameCount;
@@ -165,13 +172,13 @@ QVector<double> MainWindow::createDataPoints()
 {
     int i;
     QVector<double> fftPoints;
-    fftw_complex in[blah], out[blah];
+    fftw_complex in[numPoints], out[numPoints];
     fftw_plan p;
 
-    p = fftw_plan_dft_1d(blah, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    p = fftw_plan_dft_1d(numPoints, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    if(points.size() > 256) {
-        for (i = 0; i < blah; i++)
+    if(points.size() > numPoints) {
+        for (i = 0; i < numPoints; i++)
         {
             std::complex<double> current = points.dequeue();
             in[i][0] = current.real();
@@ -179,12 +186,11 @@ QVector<double> MainWindow::createDataPoints()
             points.unlock();
 
         }
-        std::cout << "Size of queue after creating points: " << points.size() << std::endl;
     }
 
     fftw_execute(p);
 
-    for (i = 0; i < blah; i++)
+    for (i = 0; i < numPoints; i++)
     {
         fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
     }
@@ -335,7 +341,7 @@ void MainWindow::doStuff()
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
     // TX stream config
-    txcfg.bw_hz = MHZ(1.5); // 1.5 MHz rf bandwidth
+    txcfg.bw_hz = MHZ(2); // 1.5 MHz rf bandwidth
     txcfg.fs_hz = MHZ(2.5);   // 2.5 MS/s tx sample rate
     txcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
     txcfg.rfport = "A"; // port A (select for rf freq.)
@@ -365,12 +371,12 @@ void MainWindow::doStuff()
     iio_channel_enable(tx0_q);
 
     printf("* Creating non-cyclic IIO buffers with 1 MiS\n");
-    rxbuf = iio_device_create_buffer(rx, 1024*1024, false);
+    rxbuf = iio_device_create_buffer(rx, numPoints*2, false);
     if (!rxbuf) {
         perror("Could not create RX buffer");
         shutdown();
     }
-    txbuf = iio_device_create_buffer(tx, 512, false);
+    txbuf = iio_device_create_buffer(tx, numPoints*2, false);
     if (!txbuf) {
         perror("Could not create TX buffer");
         shutdown();
@@ -396,14 +402,11 @@ void MainWindow::doStuff()
         p_end = iio_buffer_end(rxbuf);
         p_dat_start = iio_buffer_first(rxbuf, rx0_i);
 
-        for (p_dat = p_dat_start; p_dat < p_dat_start+1024*p_inc; p_dat += p_inc) {
+        for (p_dat = p_dat_start; p_dat < p_dat_start+numPoints*p_inc; p_dat += p_inc) {
             const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
             const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)
+            //std::cout << "real: " << i << ", imag: " << q << std::endl;
             points.enqueue({i, q});
-        }
-
-        if (points.size() > 256) {
-            std::cout << "Got Data and the queue is of size: " << points.size() << "." << std::endl;
         }
 
         // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
@@ -411,14 +414,14 @@ void MainWindow::doStuff()
         p_end = iio_buffer_end(txbuf);
         for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
             // Example: fill with zeros
-            ((int16_t*)p_dat)[0] = 1500; // Real (I)
-            ((int16_t*)p_dat)[1] = 1500; // Imag (Q)
+            ((int16_t*)p_dat)[0] = 300000; // Real (I)
+            ((int16_t*)p_dat)[1] = 300000; // Imag (Q)
         }
 
         // Sample counter increment and status output
         nrx += nbytes_rx / iio_device_get_sample_size(rx);
         ntx += nbytes_tx / iio_device_get_sample_size(tx);
-        printf("\tRX %8.2f MSmp, TX %8.2f MSmp\n", nrx/1e6, ntx/1e6);
+        //printf("\tRX %8.2f MSmp, TX %8.2f MSmp\n", nrx/1e6, ntx/1e6);
     }
 
     shutdown();
