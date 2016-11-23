@@ -52,20 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-   /* QPalette Pal(palette());
-    // set black background
-    Pal.setColor(QPalette::Background, Qt::black);
-    ui->centralWidget->setAutoFillBackground(true);
-    ui->centralWidget->setPalette(Pal);
-    ui->centralWidget->show();*/
-
-    /*QPalette Pal2(palette());
-    // set black background
-    Pal2.setColor(QPalette::Background, Qt::lightGray);
-    ui->widget_2->setAutoFillBackground(true);
-    ui->widget_2->setPalette(Pal);
-    ui->widget_2->show();*/
-
     ui->customPlot1->setBackground(Qt::lightGray);
     ui->customPlot1->axisRect()->setBackground(Qt::black);
 
