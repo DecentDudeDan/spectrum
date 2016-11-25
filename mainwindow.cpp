@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qtimer.h"
+#include<QString>
 #include <fftw3.h>
 #include <iostream>
 #include <math.h>
@@ -101,14 +102,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
 
-    QFuture<void> future = QtConcurrent::run(doStuff);
+    //QFuture<void> future = QtConcurrent::run(doStuff);
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     QTimer *dataTimer = new QTimer(this);
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()),dataTimer, SLOT(stop()));
     connect(ui->startButton, SIGNAL(clicked()),dataTimer, SLOT(start()));
-
+    ui->FFT1->addItem("512", QVariant(512));
+    ui->FFT1->addItem("1024", QVariant(1024));
+    ui->FFT1->addItem("2048", QVariant(2048));
+    ui->FFT1->addItem("4096", QVariant(4096));
+    ui->FFT1->addItem("8192", QVariant(8192));
+    
 }
 
 MainWindow::~MainWindow()
@@ -328,11 +334,15 @@ void MainWindow::doStuff()
     // Listen to ctrl+c and assert
     signal(SIGINT, handle_sig);
 
-    // RX stream config
+    // RX stream config (Modify these variables )
+
+
     rxcfg.bw_hz = MHZ(2);   // 2 MHz rf bandwidth
     rxcfg.fs_hz = MHZ(2.5);   // 2.5 MS/s rx sample rate
     rxcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
+
+
 
     // TX stream config
     txcfg.bw_hz = MHZ(1.5); // 1.5 MHz rf bandwidth
@@ -365,7 +375,7 @@ void MainWindow::doStuff()
     iio_channel_enable(tx0_q);
 
     printf("* Creating non-cyclic IIO buffers with 1 MiS\n");
-    rxbuf = iio_device_create_buffer(rx, 1024*1024, false);
+    rxbuf = iio_device_create_buffer(rx,4 , false);
     if (!rxbuf) {
         perror("Could not create RX buffer");
         shutdown();
@@ -425,3 +435,18 @@ void MainWindow::doStuff()
 }
 
 
+
+int MainWindow::on_CF_returnPressed()
+{
+
+  QString a= ui->CF->text();
+  int b = a.toInt();
+  QMessageBox::information(this,"title",ui->CF->text());
+  return b;
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+
+    int value = ui->FFT1->itemData(index).toInt();
+}

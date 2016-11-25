@@ -21,6 +21,6 @@ HEADERS  += mainwindow.h \
     concurrentqueue.h
 FORMS    += mainwindow.ui
 
-LIBS += -L/home/timmy/FFTW/fftw-3.3.5/fftw-3.3.5 -L/home/timmy/libiio/libiio \
+LIBS += -L/home/chris/fftw-3.3.5/fftw-3.3.5 -L/home/chris/libiio-master\
 -lfftw3 \
 -liio \
