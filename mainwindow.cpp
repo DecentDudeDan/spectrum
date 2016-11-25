@@ -15,13 +15,12 @@
 #include <iio.h>
 #include <ctime>
 #include "concurrentqueue.h"
-#define blah 256
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
 int cf;
 int ab;
-int fft;
+int numPoints;
 
 /* RX is input, TX is output */
 enum iodev { RX, TX };
@@ -91,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
     timeTicker->setTimeFormat("%h:%m:%s");
-    ui->customPlot1->xAxis->setRange(0,blah);
+    ui->customPlot1->xAxis->setRange(0,numPoints);
     ui->customPlot1->axisRect()->setupFullAxesBox();
     ui->customPlot1->yAxis->setRange(-1.5, 1.5);
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
@@ -106,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
 
-    //QFuture<void> future = QtConcurrent::run(doStuff);
+    QFuture<void> future = QtConcurrent::run(doStuff);
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     QTimer *dataTimer = new QTimer(this);
@@ -139,18 +138,18 @@ void MainWindow::realtimeDataSlot()
 
     // generate a vector of double's for the x Axis
     if(xValue.isEmpty()) {
-        for(int i = 0; i < blah; i++) {
+        for(int i = 0; i < numPoints; i++) {
             xValue.push_back(i);
         }
     }
 
-    if(points.size() > 256)  {
+    if(points.size() > numPoints)  {
         fftPoints = createDataPoints();
     }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
     // add data to lines:
-    if (xValue.size() == fftPoints.size() && fftPoints.size() == 256) {
+    if (xValue.size() == fftPoints.size() && fftPoints.size() == numPoints) {
         ui->customPlot1->graph(0)->setData(xValue, fftPoints);
     }
     // TODO: add event for changing graph color based on value of graph.
@@ -180,13 +179,13 @@ QVector<double> MainWindow::createDataPoints()
 {
     int i;
     QVector<double> fftPoints;
-    fftw_complex in[blah], out[blah];
+    fftw_complex in[numPoints], out[numPoints];
     fftw_plan p;
 
-    p = fftw_plan_dft_1d(blah, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    p = fftw_plan_dft_1d(numPoints, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    if(points.size() > 256) {
-        for (i = 0; i < blah; i++)
+    if(points.size() > numPoints) {
+        for (i = 0; i < numPoints; i++)
         {
             std::complex<double> current = points.dequeue();
             in[i][0] = current.real();
@@ -199,7 +198,7 @@ QVector<double> MainWindow::createDataPoints()
 
     fftw_execute(p);
 
-    for (i = 0; i < blah; i++)
+    for (i = 0; i < numPoints; i++)
     {
         fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
     }
@@ -422,7 +421,7 @@ void MainWindow::doStuff()
             points.enqueue({i, q});
         }
 
-        if (points.size() > 256) {
+        if (points.size() > numPoints) {
             std::cout << "Got Data and the queue is of size: " << points.size() << "." << std::endl;
         }
 
@@ -448,8 +447,7 @@ void MainWindow::doStuff()
 
 
 
-void MainWindow::on_comboBox_currentIndexChanged(int index)
+void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
-
-    fft = ui->FFT1->itemData(index).toInt();
+    numPoints = ui->FFT1->itemData(index).toInt();
 }

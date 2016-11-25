@@ -98,19 +98,6 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>300</y>
-       <width>59</width>
-       <height>14</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
@@ -159,6 +146,9 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
      <property name="maxVisibleItems">
       <number>5</number>
      </property>
@@ -171,7 +161,7 @@
      <x>0</x>
      <y>0</y>
      <width>1243</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
