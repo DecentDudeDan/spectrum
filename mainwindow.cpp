@@ -432,6 +432,10 @@ void MainWindow::on_FFT1_currentIndexChanged(int index)
     numPoints = ui->FFT1->itemData(index).toInt();
     ui->customPlot1->xAxis->setRange(0, numPoints);
     ui->customPlot1->replot();
+void MainWindow::on_startButton_clicked()
+{
+    QFuture<void> future = QtConcurrent::run(doStuff);
+
 }
 
 void MainWindow::on_startButton_clicked()
