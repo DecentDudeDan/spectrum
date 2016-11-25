@@ -25,6 +25,8 @@ private Q_SLOTS:
 
         void on_FFT1_currentIndexChanged(int index);
 
+        void on_startButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -45,7 +45,7 @@ static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
 
-int numPoints = 512;
+int numPoints = 32768;
 ConcurrentQueue points;
 QVector<double> xValue;
 
@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
     ui->customPlot1->yAxis->setTicker(logTicker);
 
-    QFuture<void> future = QtConcurrent::run(doStuff);
+
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     QTimer *dataTimer = new QTimer(this);
@@ -419,4 +419,10 @@ void MainWindow::doStuff()
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
     numPoints = ui->FFT1->itemData(index).toInt();
+}
+
+void MainWindow::on_startButton_clicked()
+{
+    QFuture<void> future = QtConcurrent::run(doStuff);
+
 }
