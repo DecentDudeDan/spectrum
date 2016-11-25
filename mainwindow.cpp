@@ -45,9 +45,10 @@ static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
 
-int numPoints = 512;
+int numPoints;
 ConcurrentQueue points;
 QVector<double> xValue;
+QTimer *dataTimer = new QTimer();
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -73,13 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
     ui->customPlot1->yAxis->setTicker(logTicker);
 
-    QFuture<void> future = QtConcurrent::run(doStuff);
-
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
-    QTimer *dataTimer = new QTimer(this);
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-    connect(ui->StopButton, SIGNAL(clicked()),dataTimer, SLOT(stop()));
-    connect(ui->startButton, SIGNAL(clicked()),dataTimer, SLOT(start()));
+    connect(ui->StopButton, SIGNAL(clicked()), dataTimer, SLOT(stop()));
     //setup user inputs dropdown values
        ui->FFT1->addItem("256", QVariant(256));
        ui->FFT1->addItem("512", QVariant(512));
@@ -97,6 +94,20 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::stopStuff()
+{
+    stop = true;
+    ConcurrentQueue points;
+    QVector<double> xValue;
+}
+
+void MainWindow::startStuff()
+{
+    stop = false;
+    dataTimer->start();
+    QFuture<void> future = QtConcurrent::run(doStuff);
 }
 
 void MainWindow::realtimeDataSlot()
@@ -419,4 +430,17 @@ void MainWindow::doStuff()
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
     numPoints = ui->FFT1->itemData(index).toInt();
+    ui->customPlot1->xAxis->setRange(0, numPoints);
+    ui->customPlot1->replot();
 }
+
+void MainWindow::on_startButton_clicked()
+{
+    startStuff();
+}
+
+void MainWindow::on_StopButton_clicked()
+{
+    stopStuff();
+}
+
