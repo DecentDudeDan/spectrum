@@ -14,7 +14,6 @@
 #include <iio.h>
 #include <ctime>
 #include "concurrentqueue.h"
-#define numPoints 2048
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
@@ -43,6 +42,7 @@ static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
 
+int numPoints;
 ConcurrentQueue points;
 QVector<double> xValue;
 
