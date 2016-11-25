@@ -23,6 +23,8 @@ public:
 private Q_SLOTS:
         void realtimeDataSlot();
 
+        void on_FFT1_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 };

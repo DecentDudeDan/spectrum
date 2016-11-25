@@ -17,6 +17,10 @@
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
+    int CF;
+    int AB;
+    int numpoints;
+
 /* RX is input, TX is output */
 enum iodev { RX, TX };
 
@@ -87,13 +91,24 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
     connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
 
-    QFuture<void> future = QtConcurrent::run(doStuff);
+    //QFuture<void> future = QtConcurrent::run(doStuff);
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     QTimer *dataTimer = new QTimer(this);
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()),dataTimer, SLOT(stop()));
     connect(ui->startButton, SIGNAL(clicked()),dataTimer, SLOT(start()));
+    //setup user inputs dropdown values
+       ui->FFT1->addItem("256", QVariant(256));
+       ui->FFT1->addItem("512", QVariant(512));
+       ui->FFT1->addItem("1024", QVariant(1024));
+       ui->FFT1->addItem("2048", QVariant(2048));
+       ui->FFT1->addItem("4096", QVariant(4096));
+       ui->FFT1->addItem("8192", QVariant(8192));
+       ui->FFT1->addItem("16384", QVariant(16384));
+       ui->FFT1->addItem("32768", QVariant(32768));
+       ui->FFT1->addItem("65536", QVariant(65536));
+
 
 }
 
@@ -414,3 +429,8 @@ void MainWindow::doStuff()
 }
 
 
+
+void MainWindow::on_FFT1_currentIndexChanged(int index)
+{
+    numpoints = ui->FFT1->itemData(index).toInt();
+}
