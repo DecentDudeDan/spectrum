@@ -19,6 +19,10 @@
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
+int cf;
+int ab;
+int fft;
+
 /* RX is input, TX is output */
 enum iodev { RX, TX };
 
@@ -109,12 +113,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()),dataTimer, SLOT(stop()));
     connect(ui->startButton, SIGNAL(clicked()),dataTimer, SLOT(start()));
+
+    //setup user inputs
     ui->FFT1->addItem("512", QVariant(512));
     ui->FFT1->addItem("1024", QVariant(1024));
     ui->FFT1->addItem("2048", QVariant(2048));
     ui->FFT1->addItem("4096", QVariant(4096));
     ui->FFT1->addItem("8192", QVariant(8192));
-    
+
 }
 
 MainWindow::~MainWindow()
@@ -124,6 +130,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::realtimeDataSlot()
 {
+    cf = ui->CF->text().toInt();
+    ab = ui->AB->text().toInt();
+
     static QTime time(QTime::currentTime());
     QVector<double> fftPoints;
     double key;
@@ -319,6 +328,7 @@ bool cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_cfg *cfg, en
 /* simple configuration and streaming */
 void MainWindow::doStuff()
 {
+
     // Streaming devices
     struct iio_device *tx;
     struct iio_device *rx;
@@ -436,17 +446,10 @@ void MainWindow::doStuff()
 
 
 
-int MainWindow::on_CF_returnPressed()
-{
 
-  QString a= ui->CF->text();
-  int b = a.toInt();
-  QMessageBox::information(this,"title",ui->CF->text());
-  return b;
-}
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
 
-    int value = ui->FFT1->itemData(index).toInt();
+    fft = ui->FFT1->itemData(index).toInt();
 }

@@ -153,7 +153,7 @@
     <widget class="QComboBox" name="FFT1">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>170</x>
        <y>340</y>
        <width>79</width>
        <height>22</height>

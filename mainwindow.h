@@ -23,7 +23,6 @@ public:
 private Q_SLOTS:
         void realtimeDataSlot();
 
-        int on_CF_returnPressed();
 
         void on_comboBox_currentIndexChanged(int index);
 
