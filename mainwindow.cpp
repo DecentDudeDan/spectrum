@@ -119,6 +119,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::realtimeDataSlot()
 {
+    CF = ui->CF->text().toInt();
+    AB = ui->AB->text().toInt();
+
+
     static QTime time(QTime::currentTime());
     QVector<double> fftPoints;
     double key;
@@ -336,9 +340,9 @@ void MainWindow::doStuff()
     signal(SIGINT, handle_sig);
 
     // RX stream config
-    rxcfg.bw_hz = MHZ(2);   // 2 MHz rf bandwidth
+    rxcfg.bw_hz = MHZ(AB);   // value in AB for MHz rf bandwidth
     rxcfg.fs_hz = MHZ(2.5);   // 2.5 MS/s rx sample rate
-    rxcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
+    rxcfg.lo_hz = GHZ(CF); // value in CF for GHz rf frequency
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
     // TX stream config
