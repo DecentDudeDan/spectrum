@@ -49,6 +49,7 @@ int numPoints;
 ConcurrentQueue points;
 QVector<double> xValue;
 QTimer *dataTimer = new QTimer();
+QFuture<void> future;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -78,15 +79,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()), dataTimer, SLOT(stop()));
     //setup user inputs dropdown values
-       ui->FFT1->addItem("256", QVariant(256));
-       ui->FFT1->addItem("512", QVariant(512));
-       ui->FFT1->addItem("1024", QVariant(1024));
-       ui->FFT1->addItem("2048", QVariant(2048));
-       ui->FFT1->addItem("4096", QVariant(4096));
-       ui->FFT1->addItem("8192", QVariant(8192));
-       ui->FFT1->addItem("16384", QVariant(16384));
-       ui->FFT1->addItem("32768", QVariant(32768));
-       ui->FFT1->addItem("65536", QVariant(65536));
+    ui->FFT1->addItem("256", QVariant(256));
+    ui->FFT1->addItem("512", QVariant(512));
+    ui->FFT1->addItem("1024", QVariant(1024));
+    ui->FFT1->addItem("2048", QVariant(2048));
+    ui->FFT1->addItem("4096", QVariant(4096));
+    ui->FFT1->addItem("8192", QVariant(8192));
+    ui->FFT1->addItem("16384", QVariant(16384));
+    ui->FFT1->addItem("32768", QVariant(32768));
+    ui->FFT1->addItem("65536", QVariant(65536));
 
 
 }
@@ -107,15 +108,11 @@ void MainWindow::startStuff()
 {
     stop = false;
     dataTimer->start();
-    QFuture<void> future = QtConcurrent::run(doStuff);
+    future = QtConcurrent::run(doStuff);
 }
 
 void MainWindow::realtimeDataSlot()
 {
-    CF = ui->CF->text().toInt();
-    AB = ui->AB->text().toInt();
-
-
     static QTime time(QTime::currentTime());
     QVector<double> fftPoints;
     double key;
@@ -443,5 +440,15 @@ void MainWindow::on_startButton_clicked()
 void MainWindow::on_StopButton_clicked()
 {
     stopStuff();
+}
+
+void MainWindow::on_CF1_editingFinished()
+{
+    CF = ui->CF->text().toInt();
+}
+
+void MainWindow::on_AB1_editingFinished()
+{
+    AB = ui->AB->text().toInt();
 }
 

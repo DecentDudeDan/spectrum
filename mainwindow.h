@@ -23,11 +23,12 @@ public:
     void stopStuff();
 
 private Q_SLOTS:
-        void realtimeDataSlot();
-        void on_startButton_clicked();
-        void on_FFT1_currentIndexChanged(int index);
-        void on_StopButton_clicked();
-
+    void realtimeDataSlot();
+    void on_startButton_clicked();
+    void on_FFT1_currentIndexChanged(int index);
+    void on_StopButton_clicked();
+    void on_CF1_editingFinished();
+    void on_AB1_editingFinished();
 
 private:
     Ui::MainWindow *ui;
