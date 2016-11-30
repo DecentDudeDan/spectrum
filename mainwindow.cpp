@@ -64,10 +64,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->AB->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
 
-
-
-
-
     // add a graph to the plot and set it's color to blue:
     ui->customPlot1->addGraph();
     ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
@@ -96,8 +92,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
-
-
 }
 
 MainWindow::~MainWindow()
