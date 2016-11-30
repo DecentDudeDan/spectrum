@@ -18,8 +18,8 @@
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
 
-int CF = 2.5;
-int AB = 60;
+double CF = 2.5;
+double AB = 60;
 
 /* RX is input, TX is output */
 enum iodev { RX, TX };
@@ -45,8 +45,9 @@ static struct iio_buffer  *rxbuf = NULL;
 static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
+static bool valueChanged;
 
-int numPoints;
+int numPoints = 512;
 ConcurrentQueue points;
 QVector<double> xValue;
 QTimer *dataTimer = new QTimer();
@@ -109,9 +110,9 @@ void MainWindow::stopStuff()
 
 void MainWindow::startStuff()
 {
+    future = QtConcurrent::run(doStuff);
     stop = false;
     dataTimer->start();
-    future = QtConcurrent::run(doStuff);
 }
 
 void MainWindow::realtimeDataSlot()
@@ -134,7 +135,7 @@ void MainWindow::realtimeDataSlot()
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
 
-    if (key-lastPointKey > 0.002)
+    if (key-lastPointKey > 0.006)
     {
         // add data to lines:
         if (xValue.size() == fftPoints.size() && fftPoints.size() == numPoints) {
@@ -170,6 +171,7 @@ QVector<double> MainWindow::createDataPoints()
 {
     int i;
     QVector<double> fftPoints;
+    QVector<double> ffttemp1;
     fftw_complex in[numPoints], out[numPoints];
     fftw_plan p;
 
@@ -190,8 +192,16 @@ QVector<double> MainWindow::createDataPoints()
 
     for (i = 0; i < numPoints; i++)
     {
-        fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
+        if (i < numPoints/2)
+        {
+            ffttemp1.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
+        } else
+        {
+            fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
+        }
     }
+
+    fftPoints.append(ffttemp1);
 
     fftw_destroy_plan(p);
 
@@ -333,15 +343,15 @@ void MainWindow::doStuff()
     signal(SIGINT, handle_sig);
 
     // RX stream config
-    rxcfg.bw_hz = MHZ(AB);   // value in AB for MHz rf bandwidth
-    rxcfg.fs_hz = MHZ(60);   // 2.5 MS/s rx sample rate
+    rxcfg.bw_hz = MHZ(30);   // value in AB for MHz rf bandwidth
+    rxcfg.fs_hz = MHZ(AB);   // 2.5 MS/s rx sample rate
     rxcfg.lo_hz = GHZ(CF); // value in CF for GHz rf frequency
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
     // TX stream config
-    txcfg.bw_hz = MHZ(AB); // 1.5 MHz rf bandwidth
-    txcfg.fs_hz = MHZ(60);   // 2.5 MS/s tx sample rate
-    txcfg.lo_hz = GHZ(CF); // 2.5 GHz rf frequency
+    txcfg.bw_hz = MHZ(30); // 1.5 MHz rf bandwidth
+    txcfg.fs_hz = MHZ(AB);   // 2.5 MS/s tx sample rate
+    txcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
     txcfg.rfport = "A"; // port A (select for rf freq.)
 
     printf("* Acquiring IIO context\n");
@@ -387,6 +397,30 @@ void MainWindow::doStuff()
         void *p_dat, *p_end, *p_dat_start;
         ptrdiff_t p_inc;
 
+        if (valueChanged){
+            rxcfg.bw_hz = MHZ(AB);   // value in AB for MHz rf bandwidth
+            rxcfg.lo_hz = GHZ(CF); // value in CF for GHz rf frequency
+
+            // TX stream config
+            txcfg.bw_hz = MHZ(AB); // 1.5 MHz rf bandwidth
+            txcfg.lo_hz = GHZ(CF); // 2.5 GHz rf frequency
+
+            printf("* Configuring AD9361 for streaming\n");
+            assert(cfg_ad9361_streaming_ch(ctx, &rxcfg, RX, 0) && "RX port 0 not found");
+            assert(cfg_ad9361_streaming_ch(ctx, &txcfg, TX, 0) && "TX port 0 not found");
+
+            assert(get_ad9361_stream_ch(ctx, RX, rx, 0, &rx0_i) && "RX chan i not found");
+            assert(get_ad9361_stream_ch(ctx, RX, rx, 1, &rx0_q) && "RX chan q not found");
+            assert(get_ad9361_stream_ch(ctx, TX, tx, 0, &tx0_i) && "TX chan i not found");
+            assert(get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q) && "TX chan q not found");
+
+            iio_channel_enable(rx0_i);
+            iio_channel_enable(rx0_q);
+            iio_channel_enable(tx0_i);
+            iio_channel_enable(tx0_q);
+
+            valueChanged = false;
+        }
         // Schedule TX buffer
         nbytes_tx = iio_buffer_push(txbuf);
         if (nbytes_tx < 0) { printf("Error pushing buf %d\n", (int) nbytes_tx); shutdown(); }
@@ -400,7 +434,7 @@ void MainWindow::doStuff()
         p_end = iio_buffer_end(rxbuf);
         p_dat_start = iio_buffer_first(rxbuf, rx0_i);
 
-        for (p_dat = p_dat_start; p_dat < p_dat_start+numPoints*p_inc; p_dat += p_inc) {
+        for (p_dat = p_dat_start; p_dat < p_end-1; p_dat += p_inc) {
             const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
             const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)
             //std::cout << "real: " << i << ", imag: " << q << std::endl;
@@ -413,18 +447,18 @@ void MainWindow::doStuff()
         file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
         if (!file)
         {
-            //std::cout << "Cannot open file";
+            std::cout << "Cannot open file";
 
         }
         else
         {
-            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
+            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end-1; p_dat += p_inc) {
 
 
                 file.getline(cNum, 512, ',');
                 ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
                 test = atoi(cNum);
-                std::cout << test << ",";
+                std::cout << test << ", ";
                 file.getline(cNum, 512, ',');
                 test = atoi(cNum);
                 std::cout << test << ",\n";
@@ -479,11 +513,13 @@ void MainWindow::on_StopButton_clicked()
 
 void MainWindow::on_CF1_editingFinished()
 {
-    CF = ui->CF->text().toInt();
+    CF = ui->CF1->text().toDouble();
+    valueChanged = true;
 }
 
 void MainWindow::on_AB1_editingFinished()
 {
-    AB = ui->AB->text().toInt();
+    AB = ui->AB1->text().toInt();
+    valueChanged = true;
 }
 
