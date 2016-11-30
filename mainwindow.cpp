@@ -60,6 +60,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customPlot1->setBackground(Qt::lightGray);
     ui->customPlot1->axisRect()->setBackground(Qt::black);
 
+    ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
+    ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
+    ui->AB->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
+
+
+
+
+
     // add a graph to the plot and set it's color to blue:
     ui->customPlot1->addGraph();
     ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
