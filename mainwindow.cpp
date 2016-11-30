@@ -14,9 +14,11 @@
 #include <iio.h>
 #include <ctime>
 #include "concurrentqueue.h"
-#define numPoints 2048
 #define MHZ(x) ((long long)(x*1000000.0 + .5))
 #define GHZ(x) ((long long)(x*1000000000.0 + .5))
+
+int CF = 2.5;
+int AB = 60;
 
 /* RX is input, TX is output */
 enum iodev { RX, TX };
@@ -43,8 +45,11 @@ static struct iio_buffer  *txbuf = NULL;
 
 static bool stop;
 
+int numPoints;
 ConcurrentQueue points;
 QVector<double> xValue;
+QTimer *dataTimer = new QTimer();
+QFuture<void> future;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -55,18 +60,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customPlot1->setBackground(Qt::lightGray);
     ui->customPlot1->axisRect()->setBackground(Qt::black);
 
-    ui->customPlot2->setBackground(Qt::lightGray);
-    ui->customPlot2->axisRect()->setBackground(Qt::black);
-
+    ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
+    ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
+    ui->AB->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
 
     // add a graph to the plot and set it's color to blue:
     ui->customPlot1->addGraph();
     ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
-
-    ui->customPlot2->addGraph();
-    ui->customPlot2->graph(0)->setPen(QPen(QColor(40, 255, 255)));
-    ui->customPlot2->graph(0)->setLineStyle((QCPGraph::LineStyle)1);
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
@@ -78,28 +79,38 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
     ui->customPlot1->yAxis->setTicker(logTicker);
 
-    ui->customPlot2->xAxis->setTicker(timeTicker);
-    ui->customPlot2->axisRect()->setupFullAxesBox();
-    ui->customPlot2->yAxis->setRange(-1.5, 1.5);
-
-    // make left and bottom axes transfer their ranges to right and top axes:
-
-    connect(ui->customPlot2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->xAxis2, SLOT(setRange(QCPRange)));
-    connect(ui->customPlot2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot2->yAxis2, SLOT(setRange(QCPRange)));
-
-    QFuture<void> future = QtConcurrent::run(doStuff);
-
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
-    QTimer *dataTimer = new QTimer(this);
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
-    connect(ui->StopButton, SIGNAL(clicked()),dataTimer, SLOT(stop()));
-    connect(ui->startButton, SIGNAL(clicked()),dataTimer, SLOT(start()));
-
+    connect(ui->StopButton, SIGNAL(clicked()), dataTimer, SLOT(stop()));
+    //setup user inputs dropdown values
+    ui->FFT1->addItem("256", QVariant(256));
+    ui->FFT1->addItem("512", QVariant(512));
+    ui->FFT1->addItem("1024", QVariant(1024));
+    ui->FFT1->addItem("2048", QVariant(2048));
+    ui->FFT1->addItem("4096", QVariant(4096));
+    ui->FFT1->addItem("8192", QVariant(8192));
+    ui->FFT1->addItem("16384", QVariant(16384));
+    ui->FFT1->addItem("32768", QVariant(32768));
+    ui->FFT1->addItem("65536", QVariant(65536));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::stopStuff()
+{
+    stop = true;
+    ConcurrentQueue points;
+    QVector<double> xValue;
+}
+
+void MainWindow::startStuff()
+{
+    stop = false;
+    dataTimer->start();
+    future = QtConcurrent::run(doStuff);
 }
 
 void MainWindow::realtimeDataSlot()
@@ -321,15 +332,15 @@ void MainWindow::doStuff()
     signal(SIGINT, handle_sig);
 
     // RX stream config
-    rxcfg.bw_hz = MHZ(2);   // 2 MHz rf bandwidth
-    rxcfg.fs_hz = MHZ(2.5);   // 2.5 MS/s rx sample rate
-    rxcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
+    rxcfg.bw_hz = MHZ(AB);   // value in AB for MHz rf bandwidth
+    rxcfg.fs_hz = MHZ(60);   // 2.5 MS/s rx sample rate
+    rxcfg.lo_hz = GHZ(CF); // value in CF for GHz rf frequency
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
     // TX stream config
-    txcfg.bw_hz = MHZ(2); // 1.5 MHz rf bandwidth
-    txcfg.fs_hz = MHZ(2.5);   // 2.5 MS/s tx sample rate
-    txcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
+    txcfg.bw_hz = MHZ(AB); // 1.5 MHz rf bandwidth
+    txcfg.fs_hz = MHZ(60);   // 2.5 MS/s tx sample rate
+    txcfg.lo_hz = GHZ(CF); // 2.5 GHz rf frequency
     txcfg.rfport = "A"; // port A (select for rf freq.)
 
     printf("* Acquiring IIO context\n");
@@ -413,4 +424,33 @@ void MainWindow::doStuff()
     shutdown();
 }
 
+
+
+void MainWindow::on_FFT1_currentIndexChanged(int index)
+{
+    numPoints = ui->FFT1->itemData(index).toInt();
+    ui->customPlot1->xAxis->setRange(0, numPoints);
+    ui->customPlot1->replot();
+
+}
+
+void MainWindow::on_startButton_clicked()
+{
+    startStuff();
+}
+
+void MainWindow::on_StopButton_clicked()
+{
+    stopStuff();
+}
+
+void MainWindow::on_CF1_editingFinished()
+{
+    CF = ui->CF->text().toInt();
+}
+
+void MainWindow::on_AB1_editingFinished()
+{
+    AB = ui->AB->text().toInt();
+}
 

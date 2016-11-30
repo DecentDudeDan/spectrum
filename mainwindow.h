@@ -19,9 +19,16 @@ public:
     ~MainWindow();
     QVector<double> createDataPoints();
     static void doStuff();
+    void startStuff();
+    void stopStuff();
 
 private Q_SLOTS:
-        void realtimeDataSlot();
+    void realtimeDataSlot();
+    void on_startButton_clicked();
+    void on_FFT1_currentIndexChanged(int index);
+    void on_StopButton_clicked();
+    void on_CF1_editingFinished();
+    void on_AB1_editingFinished();
 
 private:
     Ui::MainWindow *ui;
