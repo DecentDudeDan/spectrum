@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <fstream>
 #include <assert.h>
 #include <signal.h>
 #include <stdio.h>
@@ -406,7 +407,38 @@ void MainWindow::doStuff()
             points.enqueue({i, q});
         }
 
+        std::ifstream file;
+        int test;
+        char cNum[10];
+        file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
+        if (!file)
+        {
+            //std::cout << "Cannot open file";
+
+        }
+        else
+        {
+            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
+
+
+                file.getline(cNum, 512, ',');
+                ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
+                test = atoi(cNum);
+                std::cout << test << ",";
+                file.getline(cNum, 512, ',');
+                test = atoi(cNum);
+                std::cout << test << ",\n";
+                ((int16_t*)p_dat)[1] = atoi(cNum); // Imag (Q)
+
+            }
+
+
+        }
+
+        file.close();
+
         // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
+        /*
         p_inc = iio_buffer_step(txbuf);
         p_end = iio_buffer_end(txbuf);
         for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
@@ -414,6 +446,7 @@ void MainWindow::doStuff()
             ((int16_t*)p_dat)[0] = 300000; // Real (I)
             ((int16_t*)p_dat)[1] = 300000; // Imag (Q)
         }
+        */
 
         // Sample counter increment and status output
         nrx += nbytes_rx / iio_device_get_sample_size(rx);
