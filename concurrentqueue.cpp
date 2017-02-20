@@ -12,20 +12,13 @@ void ConcurrentQueue::enqueue(std::complex<double> value)
 
 std::complex<double> ConcurrentQueue::dequeue()
 {
-
-    mutex.lock();
-    return points.dequeue();
-    mutex.unlock();
-
     std::complex<double> tmp;
 
     mutex.lock();
-
     if(!points.isEmpty())
     {
         tmp = points.dequeue();
     }
-
     mutex.unlock();
 
     return tmp;

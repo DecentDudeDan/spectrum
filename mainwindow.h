@@ -18,7 +18,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QVector<double> createDataPoints();
-    static void doStuff();
+    void clearPoints();
+    void resetXValues();
+    void setupGraph();
     void startStuff();
     void stopStuff();
 

@@ -14,11 +14,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
-    concurrentqueue.cpp
+    concurrentqueue.cpp \
+    libthread.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    concurrentqueue.h
+    concurrentqueue.h \
+    libthread.h
 FORMS    += mainwindow.ui
 
 LIBS += -L/home/timmy/FFTW/fftw-3.3.5/fftw-3.3.5 -L/home/timmy/libiio/libiio \
