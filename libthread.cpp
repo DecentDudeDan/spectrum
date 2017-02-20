@@ -1,12 +1,5 @@
 #include "libthread.h"
 
-struct stream_cfg {
-    long long bw_hz; // Analog banwidth in Hz
-    long long fs_hz; // Baseband sample rate in Hz
-    long long lo_hz; // Local oscillator frequency in Hz
-    const char* rfport; // Port name
-};
-
 enum iodev { RX, TX };
 
 libThread::libThread(int numPoints, double AB, double CF)
@@ -155,9 +148,12 @@ void libThread::run()
 
     while(!stop)
     {
-        for(int i = 0; i < mPoints; i++)
+        if(points->size() < mPoints * 2)
         {
-            points->enqueue(qrand()%1000);
+            for(int i = 0; i < mPoints; i++)
+            {
+                points->enqueue(qrand()%1000);
+            }
         }
     }
 
