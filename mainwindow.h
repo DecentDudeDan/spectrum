@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <complex>
 #include <QtConcurrent/QtConcurrent>
-
+#include "libthread.h"
+#include "qtimer.h"
+#include <fftw3.h>
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +36,13 @@ private Q_SLOTS:
 
 private:
     Ui::MainWindow *ui;
+    double CF;
+    double AB;
+    int numPoints;
+    bool inSetup;
+    QVector<double> xValue;
+    QTimer *dataTimer;
+    libThread* newThread;
 };
 
 #endif // MAINWINDOW_H

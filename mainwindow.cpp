@@ -1,23 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "qtimer.h"
-#include <fftw3.h>
-#include "libthread.h"
 
-double CF = 2.5;
-double AB = 60;
-
-int numPoints = 512;
-ConcurrentQueue* points;
-QVector<double> xValue;
-QTimer *dataTimer = new QTimer();
-libThread* newThread;
+ConcurrentQueue* points = new ConcurrentQueue();
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    CF(2.5),
+    AB(60),
+    numPoints(512),
+    inSetup(true)
 {
-    points = new ConcurrentQueue();
+
+    dataTimer = new QTimer();
     ui->setupUi(this);
 
     setupGraph();
@@ -35,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
+
+    inSetup = false;
 }
 
 MainWindow::~MainWindow()
@@ -188,12 +185,11 @@ QVector<double> MainWindow::createDataPoints()
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
-    if (newThread) {
-        if (newThread->isRunning()) {
-            stopStuff();
-        }
+    if (!inSetup && newThread->isRunning()) {
+        stopStuff();
+        numPoints = ui->FFT1->itemData(index).toInt();
+        startStuff();
     }
-    numPoints = ui->FFT1->itemData(index).toInt();
 }
 
 void MainWindow::on_startButton_clicked()
@@ -203,7 +199,9 @@ void MainWindow::on_startButton_clicked()
 
 void MainWindow::on_StopButton_clicked()
 {
-    stopStuff();
+    if (newThread->isRunning()) {
+        stopStuff();
+    }
 }
 
 void MainWindow::on_CF1_editingFinished()
@@ -212,6 +210,7 @@ void MainWindow::on_CF1_editingFinished()
         stopStuff();
     }
     CF = ui->CF1->text().toDouble();
+    startStuff();
 }
 
 void MainWindow::on_AB1_editingFinished()
@@ -220,5 +219,6 @@ void MainWindow::on_AB1_editingFinished()
         stopStuff();
     }
     AB = ui->AB1->text().toInt();
+    startStuff();
 }
 
