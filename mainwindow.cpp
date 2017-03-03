@@ -54,10 +54,8 @@ void MainWindow::setupGraph()
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
-    QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
-    timeTicker->setTimeFormat("%h:%m:%s");
-    ui->customPlot1->xAxis->setRange(0,numPoints);
+    ui->customPlot1->xAxis->setRange(70, 6000);
     ui->customPlot1->axisRect()->setupFullAxesBox();
     ui->customPlot1->yAxis->setRange(1, 3000000);
     ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
@@ -106,7 +104,7 @@ void MainWindow::realtimeDataSlot()
     static double lastPointKey;
 
     if(points->size() > numPoints)  {
-        fftPoints = createDataPoints();
+        fftPoints = createDataPoints(false);
     }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
@@ -143,7 +141,7 @@ void MainWindow::realtimeDataSlot()
 
 }
 
-QVector<double> MainWindow::createDataPoints()
+QVector<double> MainWindow::createDataPoints(bool isLinear)
 {
     int i;
     QVector<double> fftPoints;
@@ -168,10 +166,14 @@ QVector<double> MainWindow::createDataPoints()
     {
         if (i < numPoints/2)
         {
-            ffttemp1.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/numPoints;
+            double dBFS = 20*log(Ppp);
+            isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            fftPoints.push_back(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]));
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/numPoints;
+            double dBFS = 20*log(Ppp);
+            isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
         }
     }
 

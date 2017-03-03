@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QVector<double> createDataPoints();
+    QVector<double> createDataPoints(bool isLinear);
     void clearPoints();
     void resetXValues();
     void setupGraph();
