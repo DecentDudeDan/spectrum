@@ -30,8 +30,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
-
+    ui->WSize->addItem("Rectangular");
+    ui->WSize->addItem("Blackman's");
+    ui->WSize->addItem("Blacktop");
+    ui->WSize->addItem("Hanning");
+    ui->WSize->addItem("Hamming");
+    
     inSetup = false;
+
+
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +48,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupGraph()
 {
+
     ui->customPlot1->setBackground(Qt::lightGray);
     ui->customPlot1->axisRect()->setBackground(Qt::black);
 
