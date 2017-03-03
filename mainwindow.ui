@@ -46,6 +46,7 @@
       <property name="styleSheet">
        <string notr="true">background: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:0.489, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))</string>
       </property>
+      <zorder>widget_2</zorder>
      </widget>
     </item>
     <item row="1" column="0">
@@ -75,7 +76,7 @@
        <string notr="true">background: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" alignment="Qt::AlignRight">
+       <item row="0" column="0">
         <widget class="QLabel" name="FFT">
          <property name="maximumSize">
           <size>
@@ -88,20 +89,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" alignment="Qt::AlignLeft">
-        <widget class="QComboBox" name="FFT1">
-         <property name="maximumSize">
-          <size>
-           <width>101</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(149, 149, 149);</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" alignment="Qt::AlignHCenter">
+       <item row="0" column="3" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="CF">
          <property name="maximumSize">
           <size>
@@ -114,33 +102,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3" alignment="Qt::AlignLeft">
-        <widget class="QLineEdit" name="CF1">
-         <property name="maximumSize">
-          <size>
-           <width>121</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4" alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="AB">
-         <property name="maximumSize">
-          <size>
-           <width>91</width>
-           <height>21</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Sample Rate:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7" alignment="Qt::AlignRight">
+       <item row="0" column="13" alignment="Qt::AlignRight">
         <widget class="QPushButton" name="startButton">
          <property name="maximumSize">
           <size>
@@ -156,7 +118,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="8" alignment="Qt::AlignHCenter">
+       <item row="0" column="14" alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="StopButton">
          <property name="maximumSize">
           <size>
@@ -181,7 +143,46 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="5" alignment="Qt::AlignLeft">
+       <item row="0" column="1">
+        <widget class="QComboBox" name="FFT1">
+         <property name="maximumSize">
+          <size>
+           <width>101</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(149, 149, 149);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLineEdit" name="CF1">
+         <property name="maximumSize">
+          <size>
+           <width>121</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10">
+        <widget class="QLabel" name="AB">
+         <property name="maximumSize">
+          <size>
+           <width>91</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Sample Rate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="12">
         <widget class="QLineEdit" name="AB1">
          <property name="maximumSize">
           <size>
@@ -194,15 +195,168 @@
          </property>
         </widget>
        </item>
+       <item row="1" column="12">
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="maximumSize">
+          <size>
+           <width>121</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="frame">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="10">
+        <widget class="QLabel" name="Span">
+         <property name="maximumSize">
+          <size>
+           <width>41</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Span</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QComboBox" name="WSize">
+         <property name="maximumSize">
+          <size>
+           <width>121</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled>
+            <colorrole role="Button">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Base">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Window">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>149</red>
+               <green>149</green>
+               <blue>149</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </disabled>
+          </palette>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(149, 149, 149);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>122</width>
+           <height>21</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Window Size</string>
+         </property>
+        </widget>
+       </item>
       </layout>
       <zorder>FFT</zorder>
-      <zorder>AB</zorder>
-      <zorder>CF1</zorder>
-      <zorder>FFT1</zorder>
       <zorder>StopButton</zorder>
       <zorder>startButton</zorder>
       <zorder>CF</zorder>
+      <zorder>CF1</zorder>
+      <zorder>FFT1</zorder>
+      <zorder>AB</zorder>
       <zorder>AB1</zorder>
+      <zorder>lineEdit</zorder>
+      <zorder>Span</zorder>
+      <zorder>WSize</zorder>
+      <zorder>label</zorder>
      </widget>
     </item>
    </layout>
