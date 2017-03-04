@@ -20,8 +20,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QVector<double> createDataPoints(bool isLinear);
+    void setXAxis();
+    void getPlotValues(QVector<double> points);
     void clearPoints();
-    void resetXValues();
+    void resetValues();
     void setupGraph();
     void startStuff();
     void stopStuff();
@@ -38,9 +40,11 @@ private:
     Ui::MainWindow *ui;
     double CF;
     double AB;
+    double S;
     int numPoints;
     bool inSetup;
     QVector<double> xValue;
+    QVector<double> plotPoints;
     QTimer *dataTimer;
     libThread* newThread;
 };
