@@ -46,7 +46,6 @@
       <property name="styleSheet">
        <string notr="true">background: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:0.489, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))</string>
       </property>
-      <zorder>widget_2</zorder>
      </widget>
     </item>
     <item row="1" column="0">
@@ -196,7 +195,7 @@
         </widget>
        </item>
        <item row="1" column="12">
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="spanValue">
          <property name="maximumSize">
           <size>
            <width>121</width>
@@ -353,7 +352,7 @@
       <zorder>FFT1</zorder>
       <zorder>AB</zorder>
       <zorder>AB1</zorder>
-      <zorder>lineEdit</zorder>
+      <zorder>spanValue</zorder>
       <zorder>Span</zorder>
       <zorder>WSize</zorder>
       <zorder>label</zorder>
@@ -367,7 +366,7 @@
      <x>0</x>
      <y>0</y>
      <width>1243</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

@@ -27,6 +27,8 @@ public:
     void setupGraph();
     void startStuff();
     void stopStuff();
+    void refreshPlotting();
+    void startPlotting();
 
 private Q_SLOTS:
     void realtimeDataSlot();
@@ -35,6 +37,8 @@ private Q_SLOTS:
     void on_StopButton_clicked();
     void on_CF1_editingFinished();
     void on_AB1_editingFinished();
+    void on_spanValue_editingFinished();
+
 
 private:
     Ui::MainWindow *ui;
@@ -42,6 +46,7 @@ private:
     double AB;
     double S;
     int numPoints;
+    int tempNumPoints;
     bool inSetup;
     QVector<double> xValue;
     QVector<double> plotPoints;

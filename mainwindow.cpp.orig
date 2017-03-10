@@ -1,25 +1,19 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define initialS 60;
-
 ConcurrentQueue* points = new ConcurrentQueue();
-bool isShuttingDown;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     CF(2.5),
     AB(60),
-    S(60),
     numPoints(512),
-    tempNumPoints(512),
     inSetup(true)
 {
+
     dataTimer = new QTimer();
     ui->setupUi(this);
-
-    newThread = new libThread(numPoints, AB, CF);
 
     setupGraph();
 
@@ -36,15 +30,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
+<<<<<<< HEAD
+
+    inSetup = false;
+=======
     ui->WSize->addItem("Rectangular");
     ui->WSize->addItem("Blackman's");
     ui->WSize->addItem("Blacktop");
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
-    
-    inSetup = false;
 
 
+>>>>>>> a86137f228086550bb319affacdbc7da8f73dc3e
 }
 
 MainWindow::~MainWindow()
@@ -69,17 +66,11 @@ void MainWindow::setupGraph()
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
-    setXAxis();
+    ui->customPlot1->xAxis->setRange(70, 6000);
     ui->customPlot1->axisRect()->setupFullAxesBox();
-    ui->customPlot1->yAxis->setRange(-250, 0);
-}
-
-void MainWindow::setXAxis()
-{
-    double start = CF - S/2;
-    double end = CF + S/2;
-
-    ui->customPlot1->xAxis->setRange(start, end);
+    ui->customPlot1->yAxis->setRange(1, 3000000);
+    ui->customPlot1->yAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->customPlot1->yAxis->setTicker(logTicker);
 }
 
 void MainWindow::stopStuff()
@@ -93,31 +84,8 @@ void MainWindow::stopStuff()
 
 void MainWindow::startStuff()
 {
-    if (newThread->isRunning())
-    {
-        stopStuff();
-    }
-    if (newThread->isFinished()) {
-        refreshPlotting();
-    } else
-    {
-        startPlotting();
-    }
-}
-
-void MainWindow::refreshPlotting()
-{
-    numPoints = tempNumPoints;
     setupGraph();
-    resetValues();
-    newThread = new libThread(numPoints, AB, CF);
-    newThread->start();
-    dataTimer->start();
-}
-
-void MainWindow::startPlotting()
-{
-    numPoints = tempNumPoints;
+    resetXValues();
     newThread = new libThread(numPoints, AB, CF);
     newThread->start();
     dataTimer->start();
@@ -129,16 +97,14 @@ void MainWindow::clearPoints()
     points = new ConcurrentQueue();
 }
 
-void MainWindow::resetValues()
+void MainWindow::resetXValues()
 {
     if(xValue.size() > 0) {
         xValue.clear();
     }
-
-    if(plotPoints.size() > 0) {
-        plotPoints.clear();
+    for(int i = 0; i < numPoints; i++) {
+        xValue.push_back(i);
     }
-
 }
 
 void MainWindow::realtimeDataSlot()
@@ -152,16 +118,14 @@ void MainWindow::realtimeDataSlot()
         fftPoints = createDataPoints(false);
     }
 
-    getPlotValues(fftPoints);
-
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
 
     if (key-lastPointKey > 0.006)
     {
 
         // add data to lines:
-        if (xValue.size() == plotPoints.size() && plotPoints.size() > 0) {
-            ui->customPlot1->graph(0)->setData(xValue, plotPoints);
+        if (xValue.size() == fftPoints.size() && fftPoints.size() == numPoints) {
+            ui->customPlot1->graph(0)->setData(xValue, fftPoints);
         }
 
         // rescale value (vertical) axis to fit the current data:
@@ -178,40 +142,12 @@ void MainWindow::realtimeDataSlot()
     if (key-lastFpsKey > 2) // average fps over 2 seconds
     {
         ui->statusBar->showMessage(
-                    QString("%1 FPS, Total Data points: %2, is running: %3, plotPoints: %4, xValues: %5")
+                    QString("%1 FPS, Total Data points: %2")
                     .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
                     .arg(ui->customPlot1->graph(0)->data()->size())
-                    .arg(newThread->isRunning())
-                    .arg(plotPoints.size())
-                    .arg(xValue.size())
                     , 0);
         lastFpsKey = key;
         frameCount = 0;
-    }
-
-}
-
-void MainWindow::getPlotValues(QVector<double> points)
-{
-    xValue.clear();
-    plotPoints.clear();
-    double xHertz;
-    double dPoints = numPoints;
-    double temp = ((60-S)/2);
-    double startIndex = (dPoints/60)*temp;
-    double temp2 = ((60+S)/2);
-    double endIndex = (dPoints/60)*temp2;
-
-    double shift = S/2;
-
-    if (endIndex <= points.size())
-    {
-        for(int i = 0; i < (endIndex - startIndex); i++ )
-        {
-            xHertz = (CF-shift) + (i * (S/dPoints));
-            xValue.push_back(xHertz);
-            plotPoints.push_back(points.at(i));
-        }
     }
 
 }
@@ -221,7 +157,6 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
     int i;
     QVector<double> fftPoints;
     QVector<double> ffttemp1;
-    double dPoints = numPoints;
     fftw_complex in[numPoints], out[numPoints];
     fftw_plan p;
 
@@ -231,40 +166,27 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
         for (i = 0; i < numPoints; i++)
         {
             std::complex<double> current = points->dequeue();
-            in[i][0] = current.real()/dPoints;
-            in[i][1] = current.imag()/dPoints;
+            in[i][0] = current.real();
+            in[i][1] = current.imag();
         }
     }
 
     fftw_execute(p);
 
-    for (i = 0; i < dPoints; i++)
+    for (i = 0; i < numPoints; i++)
     {
-        if (i < dPoints/2)
+        if (i < numPoints/2)
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints);
-            double dBFS = 10*log(Ppp);
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/numPoints;
+            double dBFS = 20*log(Ppp);
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints);
-            double dBFS = 10*log(Ppp);
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/numPoints;
+            double dBFS = 20*log(Ppp);
             isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
         }
     }
-
-    //        for (i = 0; i < dPoints; i++)
-    //        {
-    //            if (i < dPoints/2)
-    //            {
-    //                double Ppp = sqrt((out[i][0]*out[i][0] + out[i][1]*out[i][1]));
-    //                ffttemp1.push_back(Ppp);
-    //            } else
-    //            {
-    //                double Ppp = sqrt((out[i][0]*out[i][0] + out[i][1]*out[i][1]));
-    //                fftPoints.push_back(Ppp);
-    //            }
-    //        }
 
     fftPoints.append(ffttemp1);
 
@@ -276,16 +198,11 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
-    tempNumPoints = ui->FFT1->itemData(index).toInt();
-}
-
-void MainWindow::on_spanValue_editingFinished()
-{
-     double tSpan = ui->spanValue->text().toDouble();
-     if (tSpan <= 60)
-     {
-         S = tSpan;
-     }
+    if (!inSetup && newThread->isRunning()) {
+        stopStuff();
+        numPoints = ui->FFT1->itemData(index).toInt();
+        startStuff();
+    }
 }
 
 void MainWindow::on_startButton_clicked()
@@ -302,19 +219,19 @@ void MainWindow::on_StopButton_clicked()
 
 void MainWindow::on_CF1_editingFinished()
 {
-    double tCF = ui->CF1->text().toDouble();
-    if (tCF)
-    {
-        CF = tCF;
+    if (newThread->isRunning()) {
+        stopStuff();
     }
+    CF = ui->CF1->text().toDouble();
+    startStuff();
 }
 
 void MainWindow::on_AB1_editingFinished()
 {
-    double tAB = ui->AB1->text().toInt();
-    if (tAB)
-    {
-        AB = tAB;
+    if (newThread->isRunning()) {
+        stopStuff();
     }
+    AB = ui->AB1->text().toInt();
+    startStuff();
 }
 
