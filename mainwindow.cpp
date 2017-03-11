@@ -41,7 +41,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
 
+    ui->CF2->addItem("GHz");
+    ui->CF2->addItem("MHz");
 
+    ui->Span2->addItem("MHz");
+    ui->Span2->addItem("kHz");
+
+    ui->Mode1->addItem("Logrithmatic");
+    ui->Mode1->addItem("Linear");
+
+    ui->Grid1->addItem("On");
+    ui->Grid1->addItem("Off");
 }
 
 MainWindow::~MainWindow()
@@ -52,8 +62,8 @@ MainWindow::~MainWindow()
 void MainWindow::setupGraph()
 {
 
-    ui->customPlot1->setBackground(Qt::lightGray);
-    ui->customPlot1->axisRect()->setBackground(Qt::black);
+//    ui->customPlot1->setBackground(Qt::lightGray);
+//    ui->customPlot1->axisRect()->setBackground(Qt::black);
 
     ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
