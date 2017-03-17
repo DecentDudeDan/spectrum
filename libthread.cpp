@@ -31,18 +31,16 @@ void libThread::shutdown()
 {
     printf("* Destroying buffers\n");
     if (rxbuf) { iio_buffer_destroy(rxbuf); }
-    if (txbuf) { iio_buffer_destroy(txbuf); }
+    //    if (txbuf) { iio_buffer_destroy(txbuf); }
 
     printf("* Disabling streaming channels\n");
     if (rx0_i) { iio_channel_disable(rx0_i); }
     if (rx0_q) { iio_channel_disable(rx0_q); }
-    if (tx0_i) { iio_channel_disable(tx0_i); }
-    if (tx0_q) { iio_channel_disable(tx0_q); }
+    //    if (tx0_i) { iio_channel_disable(tx0_i); }
+    //    if (tx0_q) { iio_channel_disable(tx0_q); }
 
     printf("* Destroying context\n");
     if (ctx) { iio_context_destroy(ctx); }
-
-    //TODO: kill thread from outside class
 }
 
 void libThread::handle_sig(int sig)
@@ -143,16 +141,22 @@ bool libThread::cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_c
 
 void libThread::run()
 {
-    qDebug() << points->size();
     std::cout << "in loop of thread: " << QThread::currentThread() << " and value of [numPoints, AB, CF] [" << mPoints << ", " << mAB << ", " << mCF << "]." << std::endl;
+    float rand_num = 0;
 
     while(!stop)
     {
-        if(points->size() < mPoints * 2)
+        if(points)
         {
-            for(int i = 0; i < mPoints; i++)
+            if(points->size() < mPoints * 2)
             {
-                points->enqueue(qrand()%1000);
+                for(int i = 0; i < mPoints; i++)
+                {
+                    rand_num = (qrand() % 1000);
+                    double real = (.1*cos(2*3.14*mCF*i)) * rand_num;
+                    double img = (.1*sin(2*3.14*mCF*i));// * rand_num;
+                    points->enqueue({real, img});
+                }
             }
         }
     }
@@ -160,11 +164,11 @@ void libThread::run()
     qDebug() << "exiting run function";
 }
 
-/* simple configuration and streaming */
+/////* simple configuration and streaming */
 //void libThread::run()
 //{
 //    // Streaming devices
-//    struct iio_device *tx;
+////    struct iio_device *tx;
 //    struct iio_device *rx;
 
 //    // RX and TX sample counters
@@ -184,35 +188,35 @@ void libThread::run()
 //    rxcfg.lo_hz = GHZ(mCF); // value in CF for GHz rf frequency
 //    rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
-//    // TX stream config
-//    txcfg.bw_hz = MHZ(30); // 1.5 MHz rf bandwidth
-//    txcfg.fs_hz = MHZ(mAB);   // 2.5 MS/s tx sample rate
-//    txcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
-//    txcfg.rfport = "A"; // port A (select for rf freq.)
+////    // TX stream config
+////    txcfg.bw_hz = MHZ(30); // 1.5 MHz rf bandwidth
+////    txcfg.fs_hz = MHZ(mAB);   // 2.5 MS/s tx sample rate
+////    txcfg.lo_hz = GHZ(2.5); // 2.5 GHz rf frequency
+////    txcfg.rfport = "A"; // port A (select for rf freq.)
 
 //    printf("* Acquiring IIO context\n");
 //    assert((ctx = iio_create_default_context()) && "No context");
 //    assert(iio_context_get_devices_count(ctx) > 0 && "No devices");
 
 //    printf("* Acquiring AD9361 streaming devices\n");
-//    assert(get_ad9361_stream_dev(ctx, TX, &tx) && "No tx dev found");
+////    assert(get_ad9361_stream_dev(ctx, TX, &tx) && "No tx dev found");
 //    assert(get_ad9361_stream_dev(ctx, RX, &rx) && "No rx dev found");
 
 //    printf("* Configuring AD9361 for streaming\n");
 //    assert(libThread::cfg_ad9361_streaming_ch(ctx, &rxcfg, RX, 0) && "RX port 0 not found");
-//    assert(libThread::cfg_ad9361_streaming_ch(ctx, &txcfg, TX, 0) && "TX port 0 not found");
+////    assert(libThread::cfg_ad9361_streaming_ch(ctx, &txcfg, TX, 0) && "TX port 0 not found");
 
 //    printf("* Initializing AD9361 IIO streaming channels\n");
 //    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 0, &rx0_i) && "RX chan i not found");
 //    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 1, &rx0_q) && "RX chan q not found");
-//    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 0, &tx0_i) && "TX chan i not found");
-//    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q) && "TX chan q not found");
+////    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 0, &tx0_i) && "TX chan i not found");
+////    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q) && "TX chan q not found");
 
 //    printf("* Enabling IIO streaming channels\n");
 //    iio_channel_enable(rx0_i);
 //    iio_channel_enable(rx0_q);
-//    iio_channel_enable(tx0_i);
-//    iio_channel_enable(tx0_q);
+////    iio_channel_enable(tx0_i);
+////    iio_channel_enable(tx0_q);
 
 //    printf("* Creating non-cyclic IIO buffers with 1 MiS\n");
 //    rxbuf = iio_device_create_buffer(rx, mPoints*2, false);
@@ -220,11 +224,11 @@ void libThread::run()
 //        perror("Could not create RX buffer");
 //        shutdown();
 //    }
-//    txbuf = iio_device_create_buffer(tx, mPoints*2, false);
-//    if (!txbuf) {
-//        perror("Could not create TX buffer");
-//        shutdown();
-//    }
+////    txbuf = iio_device_create_buffer(tx, mPoints*2, false);
+////    if (!txbuf) {
+////        perror("Could not create TX buffer");
+////        shutdown();
+////    }
 
 //    printf("* Starting IO streaming (press CTRL+C to cancel)\n");
 //    while (!stop)
@@ -234,8 +238,8 @@ void libThread::run()
 //        ptrdiff_t p_inc;
 
 //        // Schedule TX buffer
-//        nbytes_tx = iio_buffer_push(txbuf);
-//        if (nbytes_tx < 0) { printf("Error pushing buf %d\n", (int) nbytes_tx); shutdown(); }
+////        nbytes_tx = iio_buffer_push(txbuf);
+////        if (nbytes_tx < 0) { printf("Error pushing buf %d\n", (int) nbytes_tx); shutdown(); }
 
 //        // Refill RX buffer
 //        nbytes_rx = iio_buffer_refill(rxbuf);
@@ -246,42 +250,44 @@ void libThread::run()
 //        p_end = iio_buffer_end(rxbuf);
 //        p_dat_start = iio_buffer_first(rxbuf, rx0_i);
 
+//        if (!(points->size() > mPoints*2)){
 //        for (p_dat = p_dat_start; p_dat < p_end-1; p_dat += p_inc) {
 //            const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
 //            const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)
 //            //std::cout << "real: " << i << ", imag: " << q << std::endl;
 //            points->enqueue({i, q});
 //        }
+//    }
 
-//        std::ifstream file;
-//        int test;
-//        char cNum[10];
-//        file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
-//        if (!file)
-//        {
-//            std::cout << "Cannot open file";
+////        std::ifstream file;
+////        int test;
+////        char cNum[10];
+////        file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
+////        if (!file)
+////        {
+////            std::cout << "Cannot open file";
 
-//        }
-//        else
-//        {
-//            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end-1; p_dat += p_inc) {
-
-
-//                file.getline(cNum, 512, ',');
-//                ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
-//                test = atoi(cNum);
-//                std::cout << test << ", ";
-//                file.getline(cNum, 512, ',');
-//                test = atoi(cNum);
-//                std::cout << test << ",\n";
-//                ((int16_t*)p_dat)[1] = atoi(cNum); // Imag (Q)
-
-//            }
+////        }
+////        else
+////        {
+////            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end-1; p_dat += p_inc) {
 
 
-//        }
+////                file.getline(cNum, 512, ',');
+////                ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
+////                test = atoi(cNum);
+////                std::cout << test << ", ";
+////                file.getline(cNum, 512, ',');
+////                test = atoi(cNum);
+////                std::cout << test << ",\n";
+////                ((int16_t*)p_dat)[1] = atoi(cNum); // Imag (Q)
 
-//        file.close();
+////            }
+
+
+////        }
+
+////        file.close();
 
 //        // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
 //        /*
@@ -296,7 +302,7 @@ void libThread::run()
 
 //        // Sample counter increment and status output
 //        nrx += nbytes_rx / iio_device_get_sample_size(rx);
-//        ntx += nbytes_tx / iio_device_get_sample_size(tx);
+//        //ntx += nbytes_tx / iio_device_get_sample_size(tx);
 //        //printf("\tRX %8.2f MSmp, TX %8.2f MSmp\n", nrx/1e6, ntx/1e6);
 //    }
 
