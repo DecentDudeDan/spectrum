@@ -36,7 +36,6 @@ private Q_SLOTS:
     void on_FFT1_currentIndexChanged(int index);
     void on_StopButton_clicked();
     void on_CF1_editingFinished();
-    void on_AB1_editingFinished();
     void on_spanValue_editingFinished();
 
 
@@ -45,6 +44,7 @@ private:
     double CF;
     double AB;
     double S;
+    double tempCF;
     int numPoints;
     int tempNumPoints;
     bool inSetup;

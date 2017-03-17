@@ -96,28 +96,26 @@ void MainWindow::startStuff()
     if (newThread->isRunning())
     {
         stopStuff();
-    }
-    if (newThread->isFinished()) {
+        qDebug() << "is finished: " << newThread->isFinished();
+        if (newThread->isFinished()) {
+            refreshPlotting();
+        }
+    } else {
         refreshPlotting();
-    } else
-    {
-        startPlotting();
     }
 }
 
 void MainWindow::refreshPlotting()
 {
+    CF = tempCF;
     numPoints = tempNumPoints;
     setupGraph();
     resetValues();
-    newThread = new libThread(numPoints, AB, CF);
-    newThread->start();
-    dataTimer->start();
+    startPlotting();
 }
 
 void MainWindow::startPlotting()
 {
-    numPoints = tempNumPoints;
     newThread = new libThread(numPoints, AB, CF);
     newThread->start();
     dataTimer->start();
@@ -283,11 +281,12 @@ void MainWindow::on_FFT1_currentIndexChanged(int index)
 
 void MainWindow::on_spanValue_editingFinished()
 {
-     double tSpan = ui->spanValue->text().toDouble();
-     if (tSpan <= 60)
-     {
-         S = tSpan;
-     }
+    double tSpan = ui->spanValue->text().toDouble();
+    if (tSpan <= 60)
+    {
+        S = tSpan;
+        setupGraph();
+    }
 }
 
 void MainWindow::on_startButton_clicked()
@@ -307,16 +306,9 @@ void MainWindow::on_CF1_editingFinished()
     double tCF = ui->CF1->text().toDouble();
     if (tCF)
     {
-        CF = tCF;
+        tempCF = tCF;
     }
 }
 
-void MainWindow::on_AB1_editingFinished()
-{
-    double tAB = ui->AB1->text().toInt();
-    if (tAB)
-    {
-        AB = tAB;
-    }
-}
+
 
