@@ -148,7 +148,7 @@ void libThread::run()
     {
         if(points)
         {
-            if(points->size() < mPoints * 2)
+            if(points->size() < mPoints * 10)
             {
                 for(int i = 0; i < mPoints; i++)
                 {
@@ -250,7 +250,7 @@ void libThread::run()
 //        p_end = iio_buffer_end(rxbuf);
 //        p_dat_start = iio_buffer_first(rxbuf, rx0_i);
 
-//        if (!(points->size() > mPoints*2)){
+//        if (!(points->size() > mPoints*10)){
 //        for (p_dat = p_dat_start; p_dat < p_end-1; p_dat += p_inc) {
 //            const int i = (int)((int16_t*)p_dat)[0]; // Real (I)
 //            const int q = (int)((int16_t*)p_dat)[1]; // Imag (Q)

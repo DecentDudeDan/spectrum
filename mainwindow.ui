@@ -625,7 +625,7 @@
            <string>Average</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="AVG1">
           <property name="geometry">
            <rect>
             <x>140</x>

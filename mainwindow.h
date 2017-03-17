@@ -21,7 +21,7 @@ public:
     ~MainWindow();
     QVector<double> createDataPoints(bool isLinear);
     void setXAxis();
-    void getPlotValues(QVector<double> points);
+    void getPlotValues(QVector<QVector<double>> points);
     void clearPoints();
     void updateInfo();
     void resetValues();
@@ -30,6 +30,7 @@ public:
     void stopStuff();
     void refreshPlotting();
     void startPlotting();
+    void endRunningThread();
 
 private Q_SLOTS:
     void realtimeDataSlot();
@@ -39,6 +40,7 @@ private Q_SLOTS:
     void on_CF1_editingFinished();
     void on_AB1_editingFinished();
     void on_Span1_editingFinished();
+    void on_AVG1_editingFinished();
 
 
 private:
@@ -50,6 +52,8 @@ private:
     double tempAB;
     int numPoints;
     int tempNumPoints;
+    int numberOfAverages;
+    double maxPoint;
     bool inSetup;
     QVector<double> xValue;
     QVector<double> plotPoints;
