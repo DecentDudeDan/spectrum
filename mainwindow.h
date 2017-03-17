@@ -23,6 +23,7 @@ public:
     void setXAxis();
     void getPlotValues(QVector<double> points);
     void clearPoints();
+    void updateInfo();
     void resetValues();
     void setupGraph();
     void startStuff();
@@ -36,7 +37,8 @@ private Q_SLOTS:
     void on_FFT1_currentIndexChanged(int index);
     void on_StopButton_clicked();
     void on_CF1_editingFinished();
-    void on_spanValue_editingFinished();
+    void on_AB1_editingFinished();
+    void on_Span1_editingFinished();
 
 
 private:
@@ -45,6 +47,7 @@ private:
     double AB;
     double S;
     double tempCF;
+    double tempAB;
     int numPoints;
     int tempNumPoints;
     bool inSetup;

@@ -44,7 +44,17 @@ MainWindow::MainWindow(QWidget *parent) :
     
     inSetup = false;
 
+    ui->CF2->addItem("GHz");
+    ui->CF2->addItem("MHz");
 
+    ui->Span2->addItem("MHz");
+    ui->Span2->addItem("kHz");
+
+    ui->Mode1->addItem("Logrithmatic");
+    ui->Mode1->addItem("Linear");
+
+    ui->Grid1->addItem("On");
+    ui->Grid1->addItem("Off");
 }
 
 MainWindow::~MainWindow()
@@ -107,8 +117,7 @@ void MainWindow::startStuff()
 
 void MainWindow::refreshPlotting()
 {
-    CF = tempCF;
-    numPoints = tempNumPoints;
+    updateInfo();
     setupGraph();
     resetValues();
     startPlotting();
@@ -119,6 +128,13 @@ void MainWindow::startPlotting()
     newThread = new libThread(numPoints, AB, CF);
     newThread->start();
     dataTimer->start();
+}
+
+void MainWindow::updateInfo()
+{
+    CF = tempCF;
+    AB = tempAB;
+    numPoints = tempNumPoints;
 }
 
 void MainWindow::clearPoints()
@@ -200,6 +216,7 @@ void MainWindow::getPlotValues(QVector<double> points)
     double temp2 = ((60+S)/2);
     double endIndex = (dPoints/60)*temp2;
     double xinc = 0;
+    double max = 0;
 
     double shift = S/2;
 
@@ -211,6 +228,11 @@ void MainWindow::getPlotValues(QVector<double> points)
             xHertz = ((CF-shift) + (xinc * (60/dPoints)));
             xValue.push_back(xHertz);
             plotPoints.push_back(points.at(i));
+
+            if(points.at(i) > max)
+            {
+                max = points.at(i);
+            }
         }
     }
 
@@ -279,9 +301,9 @@ void MainWindow::on_FFT1_currentIndexChanged(int index)
     tempNumPoints = ui->FFT1->itemData(index).toInt();
 }
 
-void MainWindow::on_spanValue_editingFinished()
+void MainWindow::on_Span1_editingFinished()
 {
-    double tSpan = ui->spanValue->text().toDouble();
+    double tSpan = ui->Span1->text().toDouble();
     if (tSpan <= 60)
     {
         S = tSpan;
@@ -307,6 +329,15 @@ void MainWindow::on_CF1_editingFinished()
     if (tCF)
     {
         tempCF = tCF;
+    }
+}
+
+void MainWindow::on_AB1_editingFinished()
+{
+    double tAB = ui->AB1->text().toDouble();
+    if (tAB)
+    {
+        tempAB = tAB;
     }
 }
 
