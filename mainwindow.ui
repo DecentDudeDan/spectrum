@@ -250,7 +250,7 @@
            <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_5">
+         <widget class="QPushButton" name="RecExit">
           <property name="geometry">
            <rect>
             <x>240</x>
@@ -385,7 +385,7 @@
            <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_7">
+         <widget class="QPushButton" name="PlotExit">
           <property name="geometry">
            <rect>
             <x>240</x>
@@ -638,7 +638,7 @@
            <string notr="true">background-color: rgb(255, 255, 255);</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_6">
+         <widget class="QPushButton" name="PlotExit_2">
           <property name="geometry">
            <rect>
             <x>240</x>

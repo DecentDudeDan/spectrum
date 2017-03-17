@@ -62,8 +62,8 @@ MainWindow::~MainWindow()
 void MainWindow::setupGraph()
 {
 
-//    ui->customPlot1->setBackground(Qt::lightGray);
-//    ui->customPlot1->axisRect()->setBackground(Qt::black);
+    ui->customPlot1->setBackground(Qt::lightGray);
+    ui->customPlot1->axisRect()->setBackground(Qt::black);
 
     ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
@@ -224,13 +224,13 @@ void MainWindow::on_StopButton_clicked()
     stopStuff();
 }
 
-void MainWindow::on_CF1_editingFinished()
-{
-    if (newThread->isRunning()) {
-        stopStuff();
-    }
-    CF = ui->CF1->text().toDouble();
-}
+//void MainWindow::on_CF1_editingFinished()
+//{
+//    if (newThread->isRunning()) {
+//        stopStuff();
+//    }
+//    CF = ui->CF1->text().toDouble();
+//}
 
 void MainWindow::on_AB1_editingFinished()
 {
