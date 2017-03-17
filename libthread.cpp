@@ -142,6 +142,7 @@ bool libThread::cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_c
 void libThread::run()
 {
     std::cout << "in loop of thread: " << QThread::currentThread() << " and value of [numPoints, AB, CF] [" << mPoints << ", " << mAB << ", " << mCF << "]." << std::endl;
+    float rand_num = 0;
 
     while(!stop)
     {
@@ -151,8 +152,9 @@ void libThread::run()
             {
                 for(int i = 0; i < mPoints; i++)
                 {
-                    double real = (.1*cos(2*3.14*mCF*i)) * (qrand() % 1000);
-                    double img = .1*sin(2*3.14*mCF*i);
+                    rand_num = (qrand() % 1000);
+                    double real = (.1*cos(2*3.14*mCF*i)) * rand_num;
+                    double img = (.1*sin(2*3.14*mCF*i));// * rand_num;
                     points->enqueue({real, img});
                 }
             }

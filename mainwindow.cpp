@@ -71,7 +71,7 @@ void MainWindow::setupGraph()
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
     setXAxis();
     ui->customPlot1->axisRect()->setupFullAxesBox();
-    ui->customPlot1->yAxis->setRange(-250, 0);
+    ui->customPlot1->yAxis->setRange(-350, 0);
 }
 
 void MainWindow::setXAxis()
@@ -201,14 +201,16 @@ void MainWindow::getPlotValues(QVector<double> points)
     double startIndex = (dPoints/60)*temp;
     double temp2 = ((60+S)/2);
     double endIndex = (dPoints/60)*temp2;
+    double xinc = 0;
 
     double shift = S/2;
 
     if (endIndex <= points.size())
     {
-        for(int i = 0; i < (endIndex - startIndex); i++ )
+        for(int i = startIndex; i < endIndex; i++ )
         {
-            xHertz = (CF-shift) + (i * (S/dPoints));
+            xinc = i - startIndex;
+            xHertz = ((CF-shift) + (xinc * (60/dPoints)));
             xValue.push_back(xHertz);
             plotPoints.push_back(points.at(i));
         }
