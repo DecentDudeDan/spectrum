@@ -573,7 +573,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Window Size</string>
+           <string>Windowing</string>
           </property>
          </widget>
          <widget class="QComboBox" name="WSize">
@@ -766,7 +766,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="7">
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="FQ2">
          <property name="minimumSize">
           <size>
            <width>51</width>
@@ -807,7 +807,7 @@
         </widget>
        </item>
        <item row="0" column="4">
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="MP1">
          <property name="minimumSize">
           <size>
            <width>60</width>
@@ -823,7 +823,7 @@
         </widget>
        </item>
        <item row="0" column="9">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="Settings">
          <property name="minimumSize">
           <size>
            <width>80</width>
@@ -842,7 +842,7 @@
         </widget>
        </item>
        <item row="0" column="5">
-        <widget class="QPushButton" name="pushButton_6">
+        <widget class="QPushButton" name="MP2">
          <property name="minimumSize">
           <size>
            <width>51</width>
@@ -892,7 +892,7 @@
         </widget>
        </item>
        <item row="0" column="10">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="Export">
          <property name="minimumSize">
           <size>
            <width>80</width>
@@ -911,7 +911,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="RBW2">
          <property name="minimumSize">
           <size>
            <width>51</width>
@@ -965,7 +965,7 @@
         </widget>
        </item>
        <item row="0" column="6">
-        <widget class="QLineEdit" name="lineEdit_2">
+        <widget class="QLineEdit" name="FQ1">
          <property name="minimumSize">
           <size>
            <width>60</width>
@@ -981,7 +981,7 @@
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="MPFQ">
          <property name="minimumSize">
           <size>
            <width>150</width>
@@ -1069,5 +1069,38 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>Settings</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>634</x>
+     <y>595</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>946</x>
+     <y>490</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>widget</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1203</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>49</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
