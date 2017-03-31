@@ -138,6 +138,7 @@ void MainWindow::setupWindowingVectors()
             windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
         }
         break;
+    }
 }
 
 void MainWindow::stopStuff()
@@ -149,7 +150,7 @@ void MainWindow::stopStuff()
     ui->customPlot1->clearGraphs();
 }
 
-float MainWindow::startStuff()
+void MainWindow::startStuff()
 {
     if (newThread->isRunning())
     {
@@ -509,4 +510,9 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
        {
            spanMhz = 0;
        }
+}
+
+void MainWindow::on_WSize_currentIndexChanged(const QString &arg1)
+{
+
 }
