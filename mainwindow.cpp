@@ -357,7 +357,7 @@ void MainWindow::on_Span1_editingFinished()
 
     if (spanMhz == 1)
     {
-        if( tSpan <= 60)
+        if( tSpan > .001 && tSpan <= 60)
         {
             S = tSpan;
             setupGraph();
@@ -370,15 +370,15 @@ void MainWindow::on_Span1_editingFinished()
     }
     if(spanMhz != 1)
     {
-        if ( tSpan <= 60)
+        if ( tSpan > 1 && tSpan <= 60000)
         {
-            S = tSpan;
+            S = tSpan / 1000;
             setupGraph();
             QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
         }
         else
         {
-            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+            QMessageBox::about(this, "Incorrect Value", "Enter a number between 1 and 60000");
         }
     }
 }
@@ -402,7 +402,7 @@ void MainWindow::on_CF1_editingFinished()
         if( tCF >= 100 && tCF <= 5970)
         {
             endRunningThread();
-            CF = tCF;
+            CF = tCF / 1000;
             refreshPlotting();
         }
 
@@ -479,3 +479,5 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
            spanMhz = 0;
        }
 }
+
+

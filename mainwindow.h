@@ -48,6 +48,10 @@ private Q_SLOTS:
 
     void on_Span2_currentTextChanged(const QString &arg1);
 
+    void on_CF1_textChanged(const QString &arg1);
+
+    void on_AB1_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     double CF;
