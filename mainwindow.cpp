@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #define initialS 60;
+double cfMhz = 0;
+double spanMhz= 0;
 
 ConcurrentQueue* points = new ConcurrentQueue();
 bool isShuttingDown;
@@ -339,12 +341,35 @@ void MainWindow::on_FFT1_currentIndexChanged(int index)
 void MainWindow::on_Span1_editingFinished()
 {
     double tSpan = ui->Span1->text().toDouble();
-    if (tSpan <= 60)
+
+    if (spanMhz == 1)
     {
-        S = tSpan;
-        setupGraph();
+        if( tSpan <= 60)
+        {
+            S = tSpan;
+            setupGraph();
+            QMessageBox::about(this, "correct Value", "Correct value MHZ");
+        }
+         else
+         {
+            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+         }
+    }
+    if(spanMhz != 1)
+    {
+        if ( tSpan <= 60)
+        {
+            S = tSpan;
+            setupGraph();
+            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
+        }
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+        }
     }
 }
+
 
 void MainWindow::on_startButton_clicked()
 {
@@ -359,13 +384,37 @@ void MainWindow::on_StopButton_clicked()
 void MainWindow::on_CF1_editingFinished()
 {
     double tCF = ui->CF1->text().toDouble();
-    if (tCF)
+    if (cfMhz == 1)
     {
-        endRunningThread();
-        CF = tCF;
-        refreshPlotting();
-    }
-}
+        if( tCF >= 100 && tCF <= 5970)
+        {
+            endRunningThread();
+            CF = tCF;
+            refreshPlotting();
+            QMessageBox::about(this, "correct Value", "Correct value MHZ");
+        }
+
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+        }
+     }
+     if(cfMhz != 1)
+     {
+        if ( tCF >= .1 && tCF <= 5.97)
+        {
+            endRunningThread();
+            CF = tCF;
+            refreshPlotting();
+            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
+         }
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+        }
+     }
+ }
+
 
 void MainWindow::on_AB1_editingFinished()
 {
@@ -385,6 +434,37 @@ void MainWindow::on_AVG1_editingFinished()
         numberOfAverages = tAvg;
         refreshPlotting();
     }
+    else
+    {
+        QMessageBox::about(this, "Incorrect Value", "Enter a number 0 and 10");
+    }
 }
 
 
+
+
+
+void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
+{
+    if (ui->CF2->currentText() == "MHz")
+        {
+            cfMhz= 1;
+        }
+        else
+        {
+            cfMhz = 0;
+        }
+}
+
+void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
+{
+
+    if (ui->Span2->currentText() == "kHz")
+       {
+           spanMhz= 1;
+       }
+       else
+       {
+           spanMhz = 0;
+       }
+}
