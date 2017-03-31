@@ -31,6 +31,7 @@ public:
     void refreshPlotting();
     void startPlotting();
     void endRunningThread();
+    void setupWindowingVectors();
 
 private Q_SLOTS:
     void realtimeDataSlot();
@@ -42,6 +43,8 @@ private Q_SLOTS:
     void on_Span1_editingFinished();
     void on_AVG1_editingFinished();
 
+
+    void on_WSize_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -57,6 +60,7 @@ private:
     bool inSetup;
     QVector<double> xValue;
     QVector<double> plotPoints;
+    QVector<double> windowMult;
     QTimer *dataTimer;
     libThread* newThread;
 };

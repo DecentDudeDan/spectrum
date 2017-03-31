@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
     ui->WSize->addItem("Rectangular");
-    ui->WSize->addItem("Blackman's");
+    ui->WSize->addItem("Blackman");
     ui->WSize->addItem("Blacktop");
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
@@ -94,6 +94,41 @@ void MainWindow::setXAxis()
     ui->customPlot1->xAxis->setRange(start, end);
 }
 
+void MainWindow::setupWindowingVectors()
+{
+    const double PI = 2*acos(0);
+    if(windowMult.size() > 0)
+    {
+        windowMult.clear();
+    }
+    switch(window)
+    {
+    case "Blackman":
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
+        }
+        break;
+    case "Flat Top":
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
+        }
+        break;
+    case "Hanning":
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
+        }
+        break;
+    case "Hamming":
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
+        }
+        break;
+}
+
 void MainWindow::stopStuff()
 {
     dataTimer->stop();
@@ -103,7 +138,7 @@ void MainWindow::stopStuff()
     ui->customPlot1->clearGraphs();
 }
 
-void MainWindow::startStuff()
+float MainWindow::startStuff()
 {
     if (newThread->isRunning())
     {
@@ -115,6 +150,7 @@ void MainWindow::startStuff()
     } else {
         refreshPlotting();
     }
+
 }
 
 void MainWindow::refreshPlotting()
@@ -388,3 +424,8 @@ void MainWindow::on_AVG1_editingFinished()
 }
 
 
+
+void MainWindow::on_WSize_currentIndexChanged(const QString &arg1)
+{
+
+}
