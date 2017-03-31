@@ -2,8 +2,6 @@
 #include "ui_mainwindow.h"
 
 #define initialS 60;
-double cfMhz = 0;
-double spanMhz= 0;
 
 ConcurrentQueue* points = new ConcurrentQueue();
 bool isShuttingDown;
@@ -18,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tempNumPoints(512),
     numberOfAverages(1),
     maxPoint(-200),
+    cfMhz(0),
+    spanMhz(0),
     inSetup(true)
 {
     dataTimer = new QTimer();
@@ -278,6 +278,8 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
 
 
         }
+
+        ui->MP1->setText(QString::number(maxPoint));
     }
 
 }
@@ -355,26 +357,24 @@ void MainWindow::on_Span1_editingFinished()
 {
     double tSpan = ui->Span1->text().toDouble();
 
-    if (spanMhz == 1)
+    if (spanMhz != 1)
     {
         if( tSpan > .001 && tSpan <= 60)
         {
             S = tSpan;
             setupGraph();
-            QMessageBox::about(this, "correct Value", "Correct value MHZ");
         }
          else
          {
             QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
          }
     }
-    if(spanMhz != 1)
+    if(spanMhz == 1)
     {
         if ( tSpan > 1 && tSpan <= 60000)
         {
             S = tSpan / 1000;
             setupGraph();
-            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
         }
         else
         {
@@ -451,10 +451,6 @@ void MainWindow::on_AVG1_editingFinished()
     }
 }
 
-
-
-
-
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
     if (ui->CF2->currentText() == "MHz")
@@ -479,5 +475,3 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
            spanMhz = 0;
        }
 }
-
-

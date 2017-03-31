@@ -42,15 +42,8 @@ private Q_SLOTS:
     void on_AB1_editingFinished();
     void on_Span1_editingFinished();
     void on_AVG1_editingFinished();
-
-
     void on_CF2_currentTextChanged(const QString &arg1);
-
     void on_Span2_currentTextChanged(const QString &arg1);
-
-    void on_CF1_textChanged(const QString &arg1);
-
-    void on_AB1_textChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -63,6 +56,8 @@ private:
     int tempNumPoints;
     int numberOfAverages;
     double maxPoint;
+    double cfMhz;
+    double spanMhz;
     bool inSetup;
     QVector<double> xValue;
     QVector<double> plotPoints;
