@@ -26,6 +26,7 @@ public:
     void updateInfo();
     void resetValues();
     void setupGraph();
+    void setGUIValues();
     void startStuff();
     void stopStuff();
     void refreshPlotting();

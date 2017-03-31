@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     numPoints(512),
     tempNumPoints(512),
     numberOfAverages(1),
-    maxPoint(0),
+    maxPoint(-200),
     inSetup(true)
 {
     dataTimer = new QTimer();
@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     newThread = new libThread(numPoints, AB, CF);
 
     setupGraph();
+    setGUIValues();
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -86,6 +87,14 @@ void MainWindow::setupGraph()
     setXAxis();
     ui->customPlot1->axisRect()->setupFullAxesBox();
     ui->customPlot1->yAxis->setRange(-350, 0);
+}
+
+void MainWindow::setGUIValues()
+{
+    ui->CF1->setText(QString::number(CF));
+    ui->AB1->setText(QString::number(AB));
+    ui->Span1->setText(QString::number(S));
+    ui->AVG1->setText(QString::number(numberOfAverages));
 }
 
 void MainWindow::setXAxis()
@@ -210,7 +219,7 @@ void MainWindow::realtimeDataSlot()
     if (key-lastFpsKey > 2) // average fps over 2 seconds
     {
         ui->statusBar->showMessage(
-                    QString("%1 FPS, Total Data points: %2, number of vectors: %3, plotPoints: %4, xValues: %5, max Point Overall: %5, size of vector")
+                    QString("%1 FPS, Total Data points: %2, number of vectors: %3, plotPoints: %4, xValues: %5, max Point Overall: %6")
                     .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
                     .arg(ui->customPlot1->graph(0)->data()->size())
                     .arg(fftPoints.size())
@@ -260,6 +269,10 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 plotPoints.push_back(avgPoint);
             } else
             {
+                if(points[0].at(i) > maxPoint)
+                {
+                    maxPoint = points[0].at(i);
+                }
                 plotPoints.push_back(points[0].at(i));
             }
 
@@ -391,7 +404,6 @@ void MainWindow::on_CF1_editingFinished()
             endRunningThread();
             CF = tCF;
             refreshPlotting();
-            QMessageBox::about(this, "correct Value", "Correct value MHZ");
         }
 
         else
@@ -406,7 +418,6 @@ void MainWindow::on_CF1_editingFinished()
             endRunningThread();
             CF = tCF;
             refreshPlotting();
-            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
          }
         else
         {
