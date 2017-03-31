@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->WSize->addItem("Blacktop");
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
+    ui->Theme1->addItem("Dark");
+    ui->Theme1->addItem("White");
     
     inSetup = false;
 
@@ -70,8 +72,8 @@ MainWindow::~MainWindow()
 void MainWindow::setupGraph()
 {
 
-    ui->customPlot1->setBackground(Qt::lightGray);
-    ui->customPlot1->axisRect()->setBackground(Qt::black);
+    //ui->customPlot1->setBackground(Qt::lightGray);
+    //ui->customPlot1->axisRect()->setBackground(Qt::black);
 
     ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
@@ -79,8 +81,8 @@ void MainWindow::setupGraph()
 
     // add a graph to the plot and set it's color to blue:
     ui->customPlot1->addGraph();
-    ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-    ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    //ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
+    //ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
@@ -474,4 +476,22 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
        {
            spanMhz = 0;
        }
+}
+
+void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
+{
+    if (ui->Theme1->currentText() == "Dark")
+    {
+        ui->customPlot1->setBackground(Qt::lightGray);
+        ui->customPlot1->axisRect()->setBackground(Qt::black);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
+        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    }
+    else if (ui->Theme1->currentText() == "White")
+    {
+        ui->customPlot1->setBackground(Qt::black);
+        ui->customPlot1->axisRect()->setBackground(Qt::white);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
+        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    }
 }

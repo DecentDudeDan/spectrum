@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1240</width>
-    <height>645</height>
+    <width>1325</width>
+    <height>701</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -765,8 +765,8 @@
        <string notr="true">background-color: rgb(111, 111, 111);</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="7">
-        <widget class="QPushButton" name="FQ2">
+       <item row="0" column="6">
+        <widget class="QLabel" name="MP2">
          <property name="minimumSize">
           <size>
            <width>51</width>
@@ -784,7 +784,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="11">
+       <item row="0" column="12">
         <widget class="QPushButton" name="startButton">
          <property name="minimumSize">
           <size>
@@ -806,23 +806,26 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
+       <item row="0" column="5">
         <widget class="QLineEdit" name="MP1">
          <property name="minimumSize">
           <size>
-           <width>60</width>
+           <width>70</width>
            <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>70</width>
            <height>22</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
         </widget>
        </item>
-       <item row="0" column="9">
+       <item row="0" column="10">
         <widget class="QPushButton" name="Settings">
          <property name="minimumSize">
           <size>
@@ -841,26 +844,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QPushButton" name="MP2">
-         <property name="minimumSize">
-          <size>
-           <width>51</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>51</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="12">
+       <item row="0" column="13">
         <widget class="QPushButton" name="StopButton">
          <property name="minimumSize">
           <size>
@@ -891,7 +875,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="10">
+       <item row="0" column="11">
         <widget class="QPushButton" name="Export">
          <property name="minimumSize">
           <size>
@@ -910,8 +894,8 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="RBW2">
+       <item row="0" column="8">
+        <widget class="QLabel" name="FQ2">
          <property name="minimumSize">
           <size>
            <width>51</width>
@@ -962,44 +946,12 @@
            <height>22</height>
           </size>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLineEdit" name="FQ1">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>60</width>
-           <height>22</height>
-          </size>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="MPFQ">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>150</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Max Power/Frequency</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="8">
+       <item row="0" column="9">
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -1012,6 +964,63 @@
          </property>
         </spacer>
        </item>
+       <item row="0" column="7">
+        <widget class="QLineEdit" name="FQ1">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="MPFQ">
+         <property name="minimumSize">
+          <size>
+           <width>140</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>140</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Max Power/Frequency</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="RBW2">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -1022,7 +1031,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1240</width>
+     <width>1325</width>
      <height>19</height>
     </rect>
    </property>

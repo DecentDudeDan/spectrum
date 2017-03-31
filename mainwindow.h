@@ -45,6 +45,8 @@ private Q_SLOTS:
     void on_CF2_currentTextChanged(const QString &arg1);
     void on_Span2_currentTextChanged(const QString &arg1);
 
+    void on_Theme1_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     double CF;
