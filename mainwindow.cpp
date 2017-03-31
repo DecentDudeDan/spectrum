@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #define initialS 60;
+double cfMhz = 0;
+double spanMhz= 0;
 
 ConcurrentQueue* points = new ConcurrentQueue();
 bool isShuttingDown;
@@ -14,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     S(60),
     numPoints(512),
     tempNumPoints(512),
+    numberOfAverages(1),
+    maxPoint(0),
     inSetup(true)
 {
     dataTimer = new QTimer();
@@ -132,8 +136,6 @@ void MainWindow::startPlotting()
 
 void MainWindow::updateInfo()
 {
-    CF = tempCF;
-    AB = tempAB;
     numPoints = tempNumPoints;
 }
 
@@ -155,18 +157,34 @@ void MainWindow::resetValues()
 
 }
 
+void MainWindow::endRunningThread()
+{
+    if(newThread->isRunning())
+    {
+        stopStuff();
+    }
+}
+
 void MainWindow::realtimeDataSlot()
 {
     static QTime time(QTime::currentTime());
-    QVector<double> fftPoints;
+    QVector<double> tmpfftPoints;
     double key;
     static double lastPointKey;
+    QVector<QVector<double>> fftPoints;
 
-    if(points->size() > numPoints)  {
-        fftPoints = createDataPoints(false);
+    for (int i = 0; i < numberOfAverages; i++)
+    {
+        if(points->size() > numPoints)  {
+            tmpfftPoints = createDataPoints(false);
+            fftPoints.push_back(tmpfftPoints);
+        }
     }
 
-    getPlotValues(fftPoints);
+    if(fftPoints.size() > 0)
+    {
+        getPlotValues(fftPoints);
+    }
 
     key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
 
@@ -192,12 +210,13 @@ void MainWindow::realtimeDataSlot()
     if (key-lastFpsKey > 2) // average fps over 2 seconds
     {
         ui->statusBar->showMessage(
-                    QString("%1 FPS, Total Data points: %2, is running: %3, plotPoints: %4, xValues: %5")
+                    QString("%1 FPS, Total Data points: %2, number of vectors: %3, plotPoints: %4, xValues: %5, max Point Overall: %5, size of vector")
                     .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
                     .arg(ui->customPlot1->graph(0)->data()->size())
-                    .arg(newThread->isRunning())
+                    .arg(fftPoints.size())
                     .arg(plotPoints.size())
                     .arg(xValue.size())
+                    .arg(maxPoint)
                     , 0);
         lastFpsKey = key;
         frameCount = 0;
@@ -205,7 +224,7 @@ void MainWindow::realtimeDataSlot()
 
 }
 
-void MainWindow::getPlotValues(QVector<double> points)
+void MainWindow::getPlotValues(QVector<QVector<double>> points)
 {
     xValue.clear();
     plotPoints.clear();
@@ -216,23 +235,35 @@ void MainWindow::getPlotValues(QVector<double> points)
     double temp2 = ((60+S)/2);
     double endIndex = (dPoints/60)*temp2;
     double xinc = 0;
-    double max = 0;
 
     double shift = S/2;
 
-    if (endIndex <= points.size())
+    if (endIndex <= points[0].size())
     {
         for(int i = startIndex; i < endIndex; i++ )
         {
             xinc = i - startIndex;
             xHertz = ((CF-shift) + (xinc * (60/dPoints)));
             xValue.push_back(xHertz);
-            plotPoints.push_back(points.at(i));
-
-            if(points.at(i) > max)
+            double avgPoint = 0;
+            if (points.size() > 1)
             {
-                max = points.at(i);
+                for (int j = 0; j < points.size(); j++)
+                {
+                    avgPoint += points[j].at(i);
+                    if(points[j].at(i) > maxPoint)
+                    {
+                        maxPoint = points[j].at(i);
+                    }
+                }
+                avgPoint = avgPoint/points.size();
+                plotPoints.push_back(avgPoint);
+            } else
+            {
+                plotPoints.push_back(points[0].at(i));
             }
+
+
         }
     }
 
@@ -298,18 +329,47 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
+    endRunningThread();
     tempNumPoints = ui->FFT1->itemData(index).toInt();
+    QThread::currentThread()->wait(1);
+    if (tempNumPoints >= 256)
+    {
+        refreshPlotting();
+    }
 }
 
 void MainWindow::on_Span1_editingFinished()
 {
     double tSpan = ui->Span1->text().toDouble();
-    if (tSpan <= 60)
+
+    if (spanMhz == 1)
     {
-        S = tSpan;
-        setupGraph();
+        if( tSpan <= 60)
+        {
+            S = tSpan;
+            setupGraph();
+            QMessageBox::about(this, "correct Value", "Correct value MHZ");
+        }
+         else
+         {
+            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+         }
+    }
+    if(spanMhz != 1)
+    {
+        if ( tSpan <= 60)
+        {
+            S = tSpan;
+            setupGraph();
+            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
+        }
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+        }
     }
 }
+
 
 void MainWindow::on_startButton_clicked()
 {
@@ -318,19 +378,43 @@ void MainWindow::on_startButton_clicked()
 
 void MainWindow::on_StopButton_clicked()
 {
-    if (newThread->isRunning()) {
-        stopStuff();
-    }
+    endRunningThread();
 }
 
 void MainWindow::on_CF1_editingFinished()
 {
     double tCF = ui->CF1->text().toDouble();
-    if (tCF)
+    if (cfMhz == 1)
     {
-        tempCF = tCF;
-    }
-}
+        if( tCF >= 100 && tCF <= 5970)
+        {
+            endRunningThread();
+            CF = tCF;
+            refreshPlotting();
+            QMessageBox::about(this, "correct Value", "Correct value MHZ");
+        }
+
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+        }
+     }
+     if(cfMhz != 1)
+     {
+        if ( tCF >= .1 && tCF <= 5.97)
+        {
+            endRunningThread();
+            CF = tCF;
+            refreshPlotting();
+            QMessageBox::about(this, "Incorrect Value", "Correct value KHZ");
+         }
+        else
+        {
+            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+        }
+     }
+ }
+
 
 void MainWindow::on_AB1_editingFinished()
 {
@@ -341,5 +425,46 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
+void MainWindow::on_AVG1_editingFinished()
+{
+    int tAvg = ui->AVG1->text().toInt();
+    if(tAvg > 0 && tAvg < 10)
+    {
+        endRunningThread();
+        numberOfAverages = tAvg;
+        refreshPlotting();
+    }
+    else
+    {
+        QMessageBox::about(this, "Incorrect Value", "Enter a number 0 and 10");
+    }
+}
 
 
+
+
+
+void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
+{
+    if (ui->CF2->currentText() == "MHz")
+        {
+            cfMhz= 1;
+        }
+        else
+        {
+            cfMhz = 0;
+        }
+}
+
+void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
+{
+
+    if (ui->Span2->currentText() == "kHz")
+       {
+           spanMhz= 1;
+       }
+       else
+       {
+           spanMhz = 0;
+       }
+}
