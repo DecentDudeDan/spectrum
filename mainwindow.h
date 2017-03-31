@@ -46,7 +46,7 @@ private Q_SLOTS:
     void on_CF2_currentTextChanged(const QString &arg1);
     void on_Span2_currentTextChanged(const QString &arg1);
 
-    void on_WSize_currentIndexChanged(const QString &arg1);
+    void on_WSize_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -62,6 +62,7 @@ private:
     double cfMhz;
     double spanMhz;
     bool inSetup;
+    int windowType;
     QVector<double> xValue;
     QVector<double> plotPoints;
     QVector<double> windowMult;

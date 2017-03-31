@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("65536", QVariant(65536));
     ui->WSize->addItem("Rectangular");
     ui->WSize->addItem("Blackman");
-    ui->WSize->addItem("Blacktop");
+    ui->WSize->addItem("Flat Top");
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
     
@@ -87,6 +87,8 @@ void MainWindow::setupGraph()
     setXAxis();
     ui->customPlot1->axisRect()->setupFullAxesBox();
     ui->customPlot1->yAxis->setRange(-350, 0);
+
+    setupWindowingVectors();
 }
 
 void MainWindow::setGUIValues()
@@ -99,10 +101,10 @@ void MainWindow::setGUIValues()
 
 void MainWindow::setXAxis()
 {
-    double start = CF - S/2;
-    double end = CF + S/2;
+//    double start = CF - S/2;
+//    double end = CF + S/2;
 
-    ui->customPlot1->xAxis->setRange(start, end);
+    ui->customPlot1->xAxis->setRange(CF, S, Qt::AlignCenter);
 }
 
 void MainWindow::setupWindowingVectors()
@@ -112,27 +114,27 @@ void MainWindow::setupWindowingVectors()
     {
         windowMult.clear();
     }
-    switch(window)
+    switch(windowType)
     {
-    case "Blackman":
+    case 1:
         for(int i = 0; i < numPoints; i++)
         {
             windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
         }
         break;
-    case "Flat Top":
+    case 2:
         for(int i = 0; i < numPoints; i++)
         {
             windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
         }
         break;
-    case "Hanning":
+    case 3:
         for(int i = 0; i < numPoints; i++)
         {
             windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
         }
         break;
-    case "Hamming":
+    case 4:
         for(int i = 0; i < numPoints; i++)
         {
             windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
@@ -332,12 +334,24 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
     p = fftw_plan_dft_1d(numPoints, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    if(points->size() > numPoints) {
-        for (i = 0; i < numPoints; i++)
-        {
-            std::complex<double> current = points->dequeue();
-            in[i][0] = current.real()/dPoints;
-            in[i][1] = current.imag()/dPoints;
+    if (windowMult.size() > 0)
+    {
+        if(points->size() > numPoints && windowMult.size() == numPoints) {
+            for (i = 0; i < numPoints; i++)
+            {
+                std::complex<double> current = points->dequeue();
+                in[i][0] = (current.real() * windowMult.at(i))/dPoints;
+                in[i][1] = (current.imag() * windowMult.at(i))/dPoints;
+            }
+        }
+    } else {
+        if(points->size() > numPoints) {
+            for (i = 0; i < numPoints; i++)
+            {
+                std::complex<double> current = points->dequeue();
+                in[i][0] = current.real()/dPoints;
+                in[i][1] = current.imag()/dPoints;
+            }
         }
     }
 
@@ -381,6 +395,7 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
+
     endRunningThread();
     tempNumPoints = ui->FFT1->itemData(index).toInt();
     QThread::currentThread()->wait(1);
@@ -401,10 +416,10 @@ void MainWindow::on_Span1_editingFinished()
             S = tSpan;
             setupGraph();
         }
-         else
-         {
+        else
+        {
             QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
-         }
+        }
     }
     if(spanMhz == 1)
     {
@@ -447,21 +462,21 @@ void MainWindow::on_CF1_editingFinished()
         {
             QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
         }
-     }
-     if(cfMhz != 1)
-     {
+    }
+    if(cfMhz != 1)
+    {
         if ( tCF >= .1 && tCF <= 5.97)
         {
             endRunningThread();
             CF = tCF;
             refreshPlotting();
-         }
+        }
         else
         {
             QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
         }
-     }
- }
+    }
+}
 
 
 void MainWindow::on_AB1_editingFinished()
@@ -491,28 +506,30 @@ void MainWindow::on_AVG1_editingFinished()
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
     if (ui->CF2->currentText() == "MHz")
-        {
-            cfMhz= 1;
-        }
-        else
-        {
-            cfMhz = 0;
-        }
+    {
+        cfMhz= 1;
+    }
+    else
+    {
+        cfMhz = 0;
+    }
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 {
     if (ui->Span2->currentText() == "kHz")
-       {
-           spanMhz= 1;
-       }
-       else
-       {
-           spanMhz = 0;
-       }
+    {
+        spanMhz= 1;
+    }
+    else
+    {
+        spanMhz = 0;
+    }
 }
 
-void MainWindow::on_WSize_currentIndexChanged(const QString &arg1)
+void MainWindow::on_WSize_currentIndexChanged(int index)
 {
-
+    endRunningThread();
+    windowType = index;
+    refreshPlotting();
 }
