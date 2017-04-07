@@ -581,7 +581,7 @@
            <rect>
             <x>140</x>
             <y>130</y>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </rect>
           </property>
@@ -894,22 +894,41 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="QLabel" name="FQ2">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="RBW1">
          <property name="minimumSize">
           <size>
-           <width>51</width>
+           <width>60</width>
            <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>51</width>
+           <width>60</width>
            <height>22</height>
           </size>
          </property>
-         <property name="text">
-          <string/>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLineEdit" name="FQ1">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
         </widget>
        </item>
@@ -932,25 +951,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="RBW1">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>60</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="9">
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -963,25 +963,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="0" column="7">
-        <widget class="QLineEdit" name="FQ1">
-         <property name="minimumSize">
-          <size>
-           <width>70</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>70</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);</string>
-         </property>
-        </widget>
        </item>
        <item row="0" column="3">
         <widget class="QPushButton" name="MPFQ">
@@ -1002,6 +983,25 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="8">
+        <widget class="QLabel" name="FQ2">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="2">
         <widget class="QLabel" name="RBW2">
          <property name="minimumSize">
@@ -1017,7 +1017,7 @@
           </size>
          </property>
          <property name="text">
-          <string/>
+          <string>Value</string>
          </property>
         </widget>
        </item>
@@ -1086,12 +1086,12 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>634</x>
-     <y>595</y>
+     <x>751</x>
+     <y>659</y>
     </hint>
     <hint type="destinationlabel">
-     <x>946</x>
-     <y>490</y>
+     <x>1315</x>
+     <y>535</y>
     </hint>
    </hints>
   </connection>
@@ -1102,8 +1102,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1203</x>
-     <y>76</y>
+     <x>1295</x>
+     <y>85</y>
     </hint>
     <hint type="destinationlabel">
      <x>1156</x>

@@ -72,17 +72,39 @@ MainWindow::~MainWindow()
 void MainWindow::setupGraph()
 {
 
-    //ui->customPlot1->setBackground(Qt::lightGray);
+    ui->customPlot1->setBackground(Qt::lightGray);
     //ui->customPlot1->axisRect()->setBackground(Qt::black);
 
     ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->AB->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
 
-    // add a graph to the plot and set it's color to blue:
+    //adds the graph
     ui->customPlot1->addGraph();
-    //ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-    //ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+
+    //Makes sure the current theme set does not change
+    if (ui->Theme1->currentText() == "Dark")
+    {
+        ui->customPlot1->axisRect()->setBackground(Qt::black);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
+    }
+    else if (ui->Theme1->currentText() == "White")
+    {
+        ui->customPlot1->axisRect()->setBackground(Qt::white);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
+    }
+
+    if (ui->Grid1->currentText() == "On")
+    {
+        ui->customPlot1->yAxis->setVisible(true);
+        ui->customPlot1->xAxis->setVisible(true);
+    }
+    else if (ui->Grid1->currentText() == "Off")
+    {
+        ui->customPlot1->yAxis->setVisible(false);
+        ui->customPlot1->xAxis->setVisible(false);
+    }
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
@@ -458,10 +480,12 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
     if (ui->CF2->currentText() == "MHz")
         {
             cfMhz= 1;
+            ui->FQ2->setText("MHz");
         }
         else
         {
             cfMhz = 0;
+            ui->FQ2->setText("GHz");
         }
 }
 
@@ -480,18 +504,30 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
 {
-    if (ui->Theme1->currentText() == "Dark")
+    //if (ui->Theme1->currentText() == "Dark")
+    if (arg1 == "Dark")
     {
-        ui->customPlot1->setBackground(Qt::lightGray);
         ui->customPlot1->axisRect()->setBackground(Qt::black);
         ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
     }
-    else if (ui->Theme1->currentText() == "White")
+    //else if (ui->Theme1->currentText() == "White")
+    else if (arg1 == "White")
     {
-        ui->customPlot1->setBackground(Qt::black);
         ui->customPlot1->axisRect()->setBackground(Qt::white);
         ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    }
+}
+
+void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "On")
+    {
+        ui->customPlot1->yAxis->setVisible(true);
+        ui->customPlot1->xAxis->setVisible(true);
+    }
+    else if (arg1 == "Off")
+    {
+        ui->customPlot1->yAxis->setVisible(false);
+        ui->customPlot1->xAxis->setVisible(false);
     }
 }
