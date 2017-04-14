@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setupGraph();
     setGUIValues();
+    ui->widget->show();
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -92,17 +93,39 @@ MainWindow::~MainWindow()
 void MainWindow::setupGraph()
 {
 
-    //ui->customPlot1->setBackground(Qt::lightGray);
+    ui->customPlot1->setBackground(Qt::lightGray);
     //ui->customPlot1->axisRect()->setBackground(Qt::black);
 
     ui->FFT->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->CF->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
     ui->AB->setStyleSheet("background-color: rgba( 255, 255, 255, 0);");
 
-    // add a graph to the plot and set it's color to blue:
+    //adds the graph
     ui->customPlot1->addGraph();
-    //ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-    //ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+
+    //Makes sure the current theme set does not change
+    if (ui->Theme1->currentText() == "Dark")
+    {
+        ui->customPlot1->axisRect()->setBackground(Qt::black);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
+    }
+    else if (ui->Theme1->currentText() == "White")
+    {
+        ui->customPlot1->axisRect()->setBackground(Qt::white);
+        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
+    }
+
+    if (ui->Grid1->currentText() == "On")
+    {
+        ui->customPlot1->yAxis->setVisible(true);
+        ui->customPlot1->xAxis->setVisible(true);
+    }
+    else if (ui->Grid1->currentText() == "Off")
+    {
+        ui->customPlot1->yAxis->setVisible(false);
+        ui->customPlot1->xAxis->setVisible(false);
+    }
 
     // set x axis to be a time ticker and y axis to be from -1.5 to 1.5:
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
@@ -409,12 +432,12 @@ QVector<double> MainWindow::createDataPoints()
     {
         if (i < dPoints/2)
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             double dBFS = 10*log10(Ppp);
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             double dBFS = 10*log10(Ppp);
             isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
         }
@@ -540,19 +563,21 @@ void MainWindow::on_AB1_editingFinished()
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
-    if (ui->CF2->currentText() == "MHz")
+    if (arg1 == "MHz")
     {
         cfMhz= 1;
+        ui->FQ2->setText("MHz");
     }
     else
     {
         cfMhz = 0;
+        ui->FQ2->setText("GHz");
     }
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 {
-    if (ui->Span2->currentText() == "kHz")
+    if (arg1 == "kHz")
     {
         spanMhz= 1;
     }
@@ -571,20 +596,47 @@ void MainWindow::on_WSize_currentIndexChanged(int index)
 
 void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
 {
+<<<<<<< HEAD
     if (ui->Theme1->currentText() == "Dark")
+
+=======
+    //if (ui->Theme1->currentText() == "Dark")
+    if (arg1 == "Dark")
+>>>>>>> origin/TimmyBranch
     {
-        ui->customPlot1->setBackground(Qt::lightGray);
         ui->customPlot1->axisRect()->setBackground(Qt::black);
         ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
     }
-    else if (ui->Theme1->currentText() == "White")
+<<<<<<< HEAD
+//    else if (ui->Theme1->currentText() == "White")
+//    {
+//        ui->customPlot1->setBackground(Qt::black);
+//        ui->customPlot1->axisRect()->setBackground(Qt::white);
+//        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
+//        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+//    }
+=======
+    //else if (ui->Theme1->currentText() == "White")
+    else if (arg1 == "White")
     {
-        ui->customPlot1->setBackground(Qt::black);
         ui->customPlot1->axisRect()->setBackground(Qt::white);
         ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
     }
+}
+
+void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "On")
+    {
+        ui->customPlot1->yAxis->setVisible(true);
+        ui->customPlot1->xAxis->setVisible(true);
+    }
+    else if (arg1 == "Off")
+    {
+        ui->customPlot1->yAxis->setVisible(false);
+        ui->customPlot1->xAxis->setVisible(false);
+    }
+>>>>>>> origin/TimmyBranch
 }
 
 void MainWindow::on_Export_clicked()
@@ -637,10 +689,29 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
     {
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
+        ui->MP2->setText("W");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
+        ui->MP2->setText("dBm");
     }
 
+}
+
+void MainWindow::on_Settings_clicked()
+{
+    if (ui->widget->isVisible() == false)
+    {
+        ui->widget->show();
+    }
+    else if (ui->widget->isVisible() == true)
+    {
+        ui->widget->hide();
+    }
+}
+
+void MainWindow::on_w3close_clicked()
+{
+    ui->widget->hide();
 }
