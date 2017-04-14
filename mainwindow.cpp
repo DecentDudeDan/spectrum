@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setupGraph();
     setGUIValues();
+    ui->widget->show();
 
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
@@ -627,4 +628,21 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
     }
+}
+
+void MainWindow::on_Settings_clicked()
+{
+    if (ui->widget->isVisible() == false)
+    {
+        ui->widget->show();
+    }
+    else if (ui->widget->isVisible() == true)
+    {
+        ui->widget->hide();
+    }
+}
+
+void MainWindow::on_w3close_clicked()
+{
+    ui->widget->hide();
 }

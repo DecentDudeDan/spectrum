@@ -50,6 +50,10 @@ private Q_SLOTS:
     void on_Grid1_currentIndexChanged(const QString &arg1);
     void on_Mode1_currentIndexChanged(const QString &arg1);
 
+    void on_Settings_clicked();
+
+    void on_w3close_clicked();
+
 private:
     Ui::MainWindow *ui;
     double CF;
