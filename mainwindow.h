@@ -51,6 +51,8 @@ private Q_SLOTS:
     void on_Mode1_currentIndexChanged(const QString &arg1);
 
 
+    void on_Grid1_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     double CF;
