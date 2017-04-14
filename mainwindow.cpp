@@ -388,12 +388,12 @@ QVector<double> MainWindow::createDataPoints()
     {
         if (i < dPoints/2)
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             double dBFS = 10*log10(Ppp);
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             double dBFS = 10*log10(Ppp);
             isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
         }
@@ -561,23 +561,24 @@ void MainWindow::on_WSize_currentIndexChanged(int index)
     refreshPlotting();
 }
 
-void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
-{
-    if (ui->Theme1->currentText() == "Dark")
-    {
-        ui->customPlot1->setBackground(Qt::lightGray);
-        ui->customPlot1->axisRect()->setBackground(Qt::black);
-        ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
-    }
-    else if (ui->Theme1->currentText() == "White")
-    {
-        ui->customPlot1->setBackground(Qt::black);
-        ui->customPlot1->axisRect()->setBackground(Qt::white);
-        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
-        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
-    }
-}
+//void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
+//{
+//    if (ui->Theme1->currentText() == "Dark")
+
+//    {
+//        ui->customPlot1->setBackground(Qt::lightGray);
+//        ui->customPlot1->axisRect()->setBackground(Qt::black);
+//        ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
+//        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+//    }
+////    else if (ui->Theme1->currentText() == "White")
+////    {
+////        ui->customPlot1->setBackground(Qt::black);
+////        ui->customPlot1->axisRect()->setBackground(Qt::white);
+////        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
+////        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+////    }
+//}
 
 void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
 {
