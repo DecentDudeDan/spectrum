@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
+
     ui->WSize->addItem("Rectangular");
     ui->WSize->addItem("Blackman");
     ui->WSize->addItem("Flat Top");
@@ -51,6 +52,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->WSize->addItem("Hamming");
     ui->Theme1->addItem("Dark");
     ui->Theme1->addItem("White");
+
+
+    ui->AVG1->addItem("1",QVariant(1));
+    ui->AVG1->addItem("2",QVariant(2));
+    ui->AVG1->addItem("3",QVariant(3));
+    ui->AVG1->addItem("4",QVariant(4));
+    ui->AVG1->addItem("5",QVariant(5));
+    ui->AVG1->addItem("6",QVariant(6));
+    ui->AVG1->addItem("7",QVariant(7));
+    ui->AVG1->addItem("8",QVariant(8));
+    ui->AVG1->addItem("9",QVariant(9));
+    ui->AVG1->addItem("10",QVariant(10));
+
+
+    firstRun = false;
+
 
     ui->CF2->addItem("GHz");
     ui->CF2->addItem("MHz");
@@ -128,6 +145,7 @@ void MainWindow::setGUIValues()
 {
     ui->CF1->setText(QString::number(CF));
     ui->AB1->setText(QString::number(AB));
+
     if (spanMhz == 0)
     {
         ui->Span1->setText(QString::number(S*THOUSAND));
@@ -135,7 +153,6 @@ void MainWindow::setGUIValues()
     {
         ui->Span1->setText(QString::number(S*MILLION));
     }
-    ui->AVG1->setText(QString::number(numberOfAverages));
 }
 
 void MainWindow::setXAxis()
@@ -538,39 +555,25 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
-void MainWindow::on_AVG1_editingFinished()
-{
-    int tAvg = ui->AVG1->text().toInt();
-    if(tAvg > 0 && tAvg < 10)
-    {
-        endRunningThread();
-        numberOfAverages = tAvg;
-        refreshPlotting();
-    }
-    else
-    {
-        QMessageBox::about(this, "Incorrect Value", "Enter a number 0 and 10");
-    }
-}
+
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
-    if (ui->CF2->currentText() == "MHz")
-        {
-            cfMhz= 1;
-            ui->FQ2->setText("MHz");
-        }
-        else
-        {
-            cfMhz = 0;
-            ui->FQ2->setText("GHz");
-        }
-
+    if (arg1 == "MHz")
+    {
+        cfMhz= 1;
+        ui->FQ2->setText("MHz");
+    }
+    else
+    {
+        cfMhz = 0;
+        ui->FQ2->setText("GHz");
+    }
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 {
-    if (ui->Span2->currentText() == "kHz")
+    if (arg1 == "kHz")
     {
         spanMhz= 1;
     }
@@ -617,17 +620,43 @@ void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
     }
 }
 
+void MainWindow::on_Export_clicked()
+{
+  QDateTime date(QDateTime::currentDateTime());
+  QString dateString = date.toString();
+  QString s = dateString.replace(QRegExp(" "), "_");
+
+   ui->widget->show();
+    ui->centralWidget->grab().save("Spectrum"+ s + ".png");
+}
+
+void MainWindow::on_AVG1_currentTextChanged(const QString &arg1)
+{
+    int tAvg = ui->AVG1->currentText().toInt();
+
+    if(tAvg > 0 && tAvg <= 10)
+    {
+        endRunningThread();
+        numberOfAverages = tAvg;
+        refreshPlotting();
+    }
+
+}
+
 void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
 {
     if (arg1 == "Linear")
     {
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
+        ui->MP2->setText("W");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
+        ui->MP2->setText("dBm");
     }
+
 }
 
 void MainWindow::on_Settings_clicked()
