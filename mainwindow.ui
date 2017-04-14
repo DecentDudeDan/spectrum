@@ -814,13 +814,13 @@
         <widget class="QLineEdit" name="MP1">
          <property name="minimumSize">
           <size>
-           <width>70</width>
+           <width>100</width>
            <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>70</width>
+           <width>100</width>
            <height>22</height>
           </size>
          </property>
