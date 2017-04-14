@@ -581,7 +581,7 @@
            <rect>
             <x>140</x>
             <y>130</y>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </rect>
           </property>
@@ -708,29 +708,14 @@
            <string>Average</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="AVG1">
+         <widget class="QComboBox" name="AVG1">
           <property name="geometry">
            <rect>
             <x>140</x>
             <y>90</y>
-            <width>120</width>
-            <height>22</height>
+            <width>121</width>
+            <height>25</height>
            </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
           </property>
          </widget>
         </widget>
@@ -1032,7 +1017,7 @@
      <x>0</x>
      <y>0</y>
      <width>1325</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
