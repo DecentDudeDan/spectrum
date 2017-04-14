@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <complex>
-#include <QtConcurrent/QtConcurrent>
+#include <QDir>
 #include "libthread.h"
 #include "qtimer.h"
 #include <fftw3.h>
@@ -71,6 +71,7 @@ private:
     QVector<double> xValue;
     QVector<double> plotPoints;
     QVector<double> windowMult;
+    QVector<std::complex<double>> cleanPoints;
     QTimer *dataTimer;
     libThread* newThread;
 };

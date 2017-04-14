@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     isLinear(false)
 {
     dataTimer = new QTimer();
+
     ui->setupUi(this);
 
     newThread = new libThread(numPoints, AB, CF);
@@ -181,7 +182,6 @@ void MainWindow::stopStuff()
     dataTimer->stop();
     newThread->setStop(true);
     newThread->exit();
-    clearPoints();
     ui->customPlot1->clearGraphs();
 }
 
@@ -202,6 +202,7 @@ void MainWindow::startStuff()
 
 void MainWindow::refreshPlotting()
 {
+    clearPoints();
     updateInfo();
     setupGraph();
     resetValues();
@@ -224,6 +225,7 @@ void MainWindow::clearPoints()
 {
     delete points;
     points = new ConcurrentQueue();
+    cleanPoints.clear();
 }
 
 void MainWindow::resetValues()
@@ -384,6 +386,7 @@ QVector<double> MainWindow::createDataPoints()
             for (i = 0; i < numPoints; i++)
             {
                 std::complex<double> current = points->dequeue();
+                cleanPoints.push_back(current);
                 in[i][0] = (current.real() * windowMult.at(i))/2048;
                 in[i][1] = (current.imag() * windowMult.at(i))/2048;
             }
@@ -393,6 +396,7 @@ QVector<double> MainWindow::createDataPoints()
             for (i = 0; i < numPoints; i++)
             {
                 std::complex<double> current = points->dequeue();
+                cleanPoints.push_back(current);
                 in[i][0] = current.real()/2048;
                 in[i][1] = current.imag()/2048;
             }
@@ -585,12 +589,33 @@ void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_Export_clicked()
 {
-  QDateTime date(QDateTime::currentDateTime());
-  QString dateString = date.toString();
-  QString s = dateString.replace(QRegExp(" "), "_");
+    if (newThread->isFinished())
+    {
+        QDateTime date(QDateTime::currentDateTime());
+        QString dateString = date.toString();
+        QString s = dateString.replace(QRegExp(" "), "_");
 
-   ui->widget->show();
-    ui->centralWidget->grab().save("Spectrum"+ s + ".png");
+        ui->widget->show();
+        ui->centralWidget->grab().save("Spectrum"+ s + ".png");
+
+        QFile file(QDir::currentPath() + "/data" + s + ".csv");
+        if (file.open(QFile::WriteOnly|QFile::Truncate))
+        {
+            QTextStream stream(&file);
+            stream << "I" << "\t" << "Q" << "\n";
+
+            for (int i = 0; i < cleanPoints.size(); i++)
+            {
+                std::complex<double> point = cleanPoints.at(i);
+                stream << QString::number(point.real()) << "\t" << QString::number(point.imag()) << "\n";
+            }
+        }
+
+        file.close();
+
+    } else {
+        QMessageBox::about(this, "Error", "Please stop the application to export data!");
+    }
 }
 
 void MainWindow::on_AVG1_currentTextChanged(const QString &arg1)
