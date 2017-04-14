@@ -1,24 +1,26 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define initialS 60;
-
 ConcurrentQueue* points = new ConcurrentQueue();
-bool isShuttingDown;
+
+const double MILLION = 1000000.0;
+const double THOUSAND = 1000.0;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     CF(2.5),
     AB(60),
-    S(60),
-    numPoints(512),
-    tempNumPoints(512),
+    S(.06),
+    numPoints(8192),
+    tempNumPoints(8192),
     numberOfAverages(1),
+    maxFrequency(0),
     maxPoint(-200),
     cfMhz(0),
     spanMhz(0),
-    inSetup(true)
+    firstRun(true),
+    isLinear(false)
 {
     dataTimer = new QTimer();
     ui->setupUi(this);
@@ -42,14 +44,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
     ui->WSize->addItem("Rectangular");
-    ui->WSize->addItem("Blackman's");
-    ui->WSize->addItem("Blacktop");
+    ui->WSize->addItem("Blackman");
+    ui->WSize->addItem("Flat Top");
     ui->WSize->addItem("Hanning");
     ui->WSize->addItem("Hamming");
     ui->Theme1->addItem("Dark");
     ui->Theme1->addItem("White");
-    
-    inSetup = false;
 
     ui->CF2->addItem("GHz");
     ui->CF2->addItem("MHz");
@@ -62,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->Grid1->addItem("On");
     ui->Grid1->addItem("Off");
+
+    firstRun = false;
 }
 
 MainWindow::~MainWindow()
@@ -110,14 +112,28 @@ void MainWindow::setupGraph()
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
     setXAxis();
     ui->customPlot1->axisRect()->setupFullAxesBox();
-    ui->customPlot1->yAxis->setRange(-350, 0);
+    if (!isLinear)
+    {
+        ui->customPlot1->yAxis->setRange(-120, 0);
+    } else
+    {
+        ui->customPlot1->yAxis->setRange(-0.001,0.15);
+    }
+
+    setupWindowingVectors();
 }
 
 void MainWindow::setGUIValues()
 {
     ui->CF1->setText(QString::number(CF));
     ui->AB1->setText(QString::number(AB));
-    ui->Span1->setText(QString::number(S));
+    if (spanMhz == 0)
+    {
+        ui->Span1->setText(QString::number(S*THOUSAND));
+    } else
+    {
+        ui->Span1->setText(QString::number(S*MILLION));
+    }
     ui->AVG1->setText(QString::number(numberOfAverages));
 }
 
@@ -127,6 +143,42 @@ void MainWindow::setXAxis()
     double end = CF + S/2;
 
     ui->customPlot1->xAxis->setRange(start, end);
+}
+
+void MainWindow::setupWindowingVectors()
+{
+    const double PI = 2*acos(0);
+    if(windowMult.size() > 0)
+    {
+        windowMult.clear();
+    }
+    switch(windowType)
+    {
+    case 1:
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
+        }
+        break;
+    case 2:
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
+        }
+        break;
+    case 3:
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
+        }
+        break;
+    case 4:
+        for(int i = 0; i < numPoints; i++)
+        {
+            windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
+        }
+        break;
+    }
 }
 
 void MainWindow::stopStuff()
@@ -150,6 +202,7 @@ void MainWindow::startStuff()
     } else {
         refreshPlotting();
     }
+
 }
 
 void MainWindow::refreshPlotting()
@@ -209,7 +262,7 @@ void MainWindow::realtimeDataSlot()
     for (int i = 0; i < numberOfAverages; i++)
     {
         if(points->size() > numPoints)  {
-            tmpfftPoints = createDataPoints(false);
+            tmpfftPoints = createDataPoints();
             fftPoints.push_back(tmpfftPoints);
         }
     }
@@ -219,7 +272,7 @@ void MainWindow::realtimeDataSlot()
         getPlotValues(fftPoints);
     }
 
-    key = time.elapsed()/1000.0; // set key to the time that has elasped from the start in seconds
+    key = time.elapsed()/THOUSAND; // set key to the time that has elasped from the start in seconds
 
     if (key-lastPointKey > 0.006)
     {
@@ -263,20 +316,22 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     plotPoints.clear();
     double xHertz;
     double dPoints = numPoints;
-    double temp = ((60-S)/2);
-    double startIndex = (dPoints/60)*temp;
-    double temp2 = ((60+S)/2);
-    double endIndex = (dPoints/60)*temp2;
+    double temp = ((.06-S)/2);
+    double startIndex = (dPoints/.06)*temp;
+    double temp2 = ((.06+S)/2);
+    double endIndex = (dPoints/.06)*temp2;
     double xinc = 0;
-
+    maxPoint = -2000;
+    maxFrequency = 0;
     double shift = S/2;
+
 
     if (endIndex <= points[0].size())
     {
         for(int i = startIndex; i < endIndex; i++ )
         {
             xinc = i - startIndex;
-            xHertz = ((CF-shift) + (xinc * (60/dPoints)));
+            xHertz = ((CF-shift) + (xinc * (.06/dPoints)));
             xValue.push_back(xHertz);
             double avgPoint = 0;
             if (points.size() > 1)
@@ -287,6 +342,10 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
+                        if (i >= 0 && i <= points[j].size())
+                        {
+                            //maxFrequency = xValue.at(i);
+                        }
                     }
                 }
                 avgPoint = avgPoint/points.size();
@@ -296,6 +355,10 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 if(points[0].at(i) > maxPoint)
                 {
                     maxPoint = points[0].at(i);
+                    if (i >= 0 && i <= points[0].size())
+                    {
+                        //maxFrequency = xValue.at(i);
+                    }
                 }
                 plotPoints.push_back(points[0].at(i));
             }
@@ -304,11 +367,12 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
         }
 
         ui->MP1->setText(QString::number(maxPoint));
+        ui->FQ1->setText(QString::number(maxFrequency));
     }
 
 }
 
-QVector<double> MainWindow::createDataPoints(bool isLinear)
+QVector<double> MainWindow::createDataPoints()
 {
     int i;
     QVector<double> fftPoints;
@@ -319,12 +383,24 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
     p = fftw_plan_dft_1d(numPoints, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
-    if(points->size() > numPoints) {
-        for (i = 0; i < numPoints; i++)
-        {
-            std::complex<double> current = points->dequeue();
-            in[i][0] = current.real()/dPoints;
-            in[i][1] = current.imag()/dPoints;
+    if (windowMult.size() > 0)
+    {
+        if(points->size() > numPoints && windowMult.size() == numPoints) {
+            for (i = 0; i < numPoints; i++)
+            {
+                std::complex<double> current = points->dequeue();
+                in[i][0] = (current.real() * windowMult.at(i))/2048;
+                in[i][1] = (current.imag() * windowMult.at(i))/2048;
+            }
+        }
+    } else {
+        if(points->size() > numPoints) {
+            for (i = 0; i < numPoints; i++)
+            {
+                std::complex<double> current = points->dequeue();
+                in[i][0] = current.real()/2048;
+                in[i][1] = current.imag()/2048;
+            }
         }
     }
 
@@ -334,13 +410,13 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
     {
         if (i < dPoints/2)
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints);
-            double dBFS = 10*log(Ppp);
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double dBFS = 10*log10(Ppp);
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints);
-            double dBFS = 10*log(Ppp);
+            double Ppp = (out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*2048);
+            double dBFS = 10*log10(Ppp);
             isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
         }
     }
@@ -368,12 +444,15 @@ QVector<double> MainWindow::createDataPoints(bool isLinear)
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
 {
-    endRunningThread();
-    tempNumPoints = ui->FFT1->itemData(index).toInt();
-    QThread::currentThread()->wait(1);
-    if (tempNumPoints >= 256)
+    if(!firstRun)
     {
-        refreshPlotting();
+        endRunningThread();
+        tempNumPoints = ui->FFT1->itemData(index).toInt();
+        QThread::currentThread()->wait(1);
+        if (tempNumPoints >= 256)
+        {
+            refreshPlotting();
+        }
     }
 }
 
@@ -381,23 +460,21 @@ void MainWindow::on_Span1_editingFinished()
 {
     double tSpan = ui->Span1->text().toDouble();
 
-    if (spanMhz != 1)
+    if (spanMhz == 0)
     {
         if( tSpan > .001 && tSpan <= 60)
         {
-            S = tSpan;
+            S = tSpan / THOUSAND;
             setupGraph();
         }
-         else
-         {
+        else
+        {
             QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
-         }
-    }
-    if(spanMhz == 1)
-    {
+        }
+    } else {
         if ( tSpan > 1 && tSpan <= 60000)
         {
-            S = tSpan / 1000;
+            S = tSpan/MILLION;
             setupGraph();
         }
         else
@@ -426,7 +503,7 @@ void MainWindow::on_CF1_editingFinished()
         if( tCF >= 100 && tCF <= 5970)
         {
             endRunningThread();
-            CF = tCF / 1000;
+            CF = tCF / THOUSAND;
             refreshPlotting();
         }
 
@@ -434,21 +511,21 @@ void MainWindow::on_CF1_editingFinished()
         {
             QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
         }
-     }
-     if(cfMhz != 1)
-     {
+    }
+    if(cfMhz != 1)
+    {
         if ( tCF >= .1 && tCF <= 5.97)
         {
             endRunningThread();
             CF = tCF;
             refreshPlotting();
-         }
+        }
         else
         {
             QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
         }
-     }
- }
+    }
+}
 
 
 void MainWindow::on_AB1_editingFinished()
@@ -487,19 +564,26 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
             cfMhz = 0;
             ui->FQ2->setText("GHz");
         }
+
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 {
-
     if (ui->Span2->currentText() == "kHz")
-       {
-           spanMhz= 1;
-       }
-       else
-       {
-           spanMhz = 0;
-       }
+    {
+        spanMhz= 1;
+    }
+    else
+    {
+        spanMhz = 0;
+    }
+}
+
+void MainWindow::on_WSize_currentIndexChanged(int index)
+{
+    endRunningThread();
+    windowType = index;
+    refreshPlotting();
 }
 
 void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
@@ -529,5 +613,18 @@ void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
     {
         ui->customPlot1->yAxis->setVisible(false);
         ui->customPlot1->xAxis->setVisible(false);
+    }
+}
+
+void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "Linear")
+    {
+        isLinear = true;
+        ui->customPlot1->yAxis->setRange(-0.001,0.15);
+    } else
+    {
+        isLinear = false;
+        ui->customPlot1->yAxis->setRange(-120,0);
     }
 }

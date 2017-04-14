@@ -153,8 +153,8 @@ void libThread::run()
                 for(int i = 0; i < mPoints; i++)
                 {
                     rand_num = (qrand() % 1000);
-                    double real = (.1*cos(2*3.14*mCF*i)) * rand_num;
-                    double img = (.1*sin(2*3.14*mCF*i));// * rand_num;
+                    double real = (.1*cos(2*3.14*3*i)) * rand_num;
+                    double img = (.1*sin(2*3.14*3*i));// * rand_num;
                     points->enqueue({real, img});
                 }
             }
@@ -167,6 +167,7 @@ void libThread::run()
 /////* simple configuration and streaming */
 //void libThread::run()
 //{
+
 //    // Streaming devices
 ////    struct iio_device *tx;
 //    struct iio_device *rx;
