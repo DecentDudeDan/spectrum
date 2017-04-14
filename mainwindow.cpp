@@ -248,7 +248,6 @@ void MainWindow::clearPoints()
 {
     delete points;
     points = new ConcurrentQueue();
-    cleanPoints.clear();
 }
 
 void MainWindow::resetValues()
@@ -596,27 +595,11 @@ void MainWindow::on_WSize_currentIndexChanged(int index)
 
 void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
 {
-<<<<<<< HEAD
-    if (ui->Theme1->currentText() == "Dark")
-
-=======
-    //if (ui->Theme1->currentText() == "Dark")
     if (arg1 == "Dark")
->>>>>>> origin/TimmyBranch
     {
         ui->customPlot1->axisRect()->setBackground(Qt::black);
         ui->customPlot1->graph(0)->setPen(QPen(QColor(224, 195, 30)));
     }
-<<<<<<< HEAD
-//    else if (ui->Theme1->currentText() == "White")
-//    {
-//        ui->customPlot1->setBackground(Qt::black);
-//        ui->customPlot1->axisRect()->setBackground(Qt::white);
-//        ui->customPlot1->graph(0)->setPen(QPen(QColor(30, 119, 227)));
-//        ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
-//    }
-=======
-    //else if (ui->Theme1->currentText() == "White")
     else if (arg1 == "White")
     {
         ui->customPlot1->axisRect()->setBackground(Qt::white);
@@ -636,7 +619,6 @@ void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
         ui->customPlot1->yAxis->setVisible(false);
         ui->customPlot1->xAxis->setVisible(false);
     }
->>>>>>> origin/TimmyBranch
 }
 
 void MainWindow::on_Export_clicked()
