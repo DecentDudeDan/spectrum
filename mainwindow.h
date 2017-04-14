@@ -46,10 +46,12 @@ private Q_SLOTS:
     void on_Span2_currentTextChanged(const QString &arg1);
     void on_WSize_currentIndexChanged(int index);
     void on_Theme1_currentIndexChanged(const QString &arg1);
+    void on_Grid1_currentIndexChanged(const QString &arg1);
+    void on_Mode1_currentIndexChanged(const QString &arg1);
+    void on_Settings_clicked();
+    void on_w3close_clicked();
     void on_Export_clicked();
     void on_AVG1_currentTextChanged(const QString &arg1);
-    void on_Mode1_currentIndexChanged(const QString &arg1);
-
 
 private:
     Ui::MainWindow *ui;
