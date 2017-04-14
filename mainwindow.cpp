@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->AVG1->addItem("10",QVariant(10));
 
 
-    inSetup = false;
+    firstRun = false;
 
 
     ui->CF2->addItem("GHz");
@@ -130,7 +130,6 @@ void MainWindow::setGUIValues()
     {
         ui->Span1->setText(QString::number(S*MILLION));
     }
-    ui->AVG1->setText(QString::number(numberOfAverages));
 }
 
 void MainWindow::setXAxis()
