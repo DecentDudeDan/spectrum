@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QVector<double> createDataPoints(bool isLinear);
+    QVector<double> createDataPoints();
     void setXAxis();
     void getPlotValues(QVector<QVector<double>> points);
     void clearPoints();
@@ -46,10 +46,10 @@ private Q_SLOTS:
     void on_Span2_currentTextChanged(const QString &arg1);
     void on_WSize_currentIndexChanged(int index);
     void on_Theme1_currentIndexChanged(const QString &arg1);
-
     void on_Export_clicked();
-
     void on_AVG1_currentTextChanged(const QString &arg1);
+    void on_Mode1_currentIndexChanged(const QString &arg1);
+
 
 private:
     Ui::MainWindow *ui;
@@ -61,10 +61,12 @@ private:
     int numPoints;
     int tempNumPoints;
     int numberOfAverages;
+    double maxFrequency;
     double maxPoint;
     double cfMhz;
     double spanMhz;
-    bool inSetup;
+    bool firstRun;
+    bool isLinear;
     int windowType;
     QVector<double> xValue;
     QVector<double> plotPoints;
