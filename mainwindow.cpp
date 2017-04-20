@@ -393,6 +393,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
 
 QVector<double> MainWindow::createDataPoints()
 {
+    cleanPoints.clear();
     int i;
     QVector<double> fftPoints;
     QVector<double> ffttemp1;
@@ -623,7 +624,7 @@ void MainWindow::on_Grid1_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_Export_clicked()
 {
-    if (newThread->isFinished())
+    if (newThread->isFinished() && cleanPoints.size() >= numPoints)
     {
         QDateTime date(QDateTime::currentDateTime());
         QString dateString = date.toString();
@@ -638,7 +639,7 @@ void MainWindow::on_Export_clicked()
             QTextStream stream(&file);
             stream << "I" << "\t" << "Q" << "\n";
 
-            for (int i = 0; i < cleanPoints.size(); i++)
+            for (int i = 0; i < numPoints; i++)
             {
                 std::complex<double> point = cleanPoints.at(i);
                 stream << QString::number(point.real()) << "\t" << QString::number(point.imag()) << "\n";
