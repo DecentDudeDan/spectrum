@@ -142,7 +142,8 @@ bool libThread::cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_c
 void libThread::run()
 {
     std::cout << "in loop of thread: " << QThread::currentThread() << " and value of [numPoints, AB, CF] [" << mPoints << ", " << mAB << ", " << mCF << "]." << std::endl;
-    float rand_num = 0;
+    float rand_mag = 0;
+    float rand_freq = 0;
 
     while(!stop)
     {
@@ -152,17 +153,19 @@ void libThread::run()
             {
                 for(int i = 0; i < mPoints; i++)
                 {
-                    rand_num = (qrand() % 1000);
-                    double real = (.1*cos(2*3.14*3*i)) * rand_num;
-                    double img = (.1*sin(2*3.14*3*i));// * rand_num;
+                    rand_mag = (qrand() % 10);
+                    rand_freq = (qrand() %100);
+                    double freq1 = 3;
+                    double real = (10*cos(2*3.14159265*freq1*i));//+rand_mag*cos(2*3.14159265*rand_freq*i);//*rand_num;
+                    double img =  (10*sin(2*3.14159265*freq1*i));//+rand_mag*sin(2*3.14159265*rand_freq*i);//*rand_num;
                     points->enqueue({real, img});
                 }
             }
         }
     }
 
-    qDebug() << "exiting run function";
-}
+//    qDebug() << "exiting run function";
+//}
 
 /////* simple configuration and streaming */
 //void libThread::run()
@@ -260,53 +263,53 @@ void libThread::run()
 //        }
 //    }
 
-////        std::ifstream file;
-////        int test;
-////        char cNum[10];
-////        file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
-////        if (!file)
-////        {
-////            std::cout << "Cannot open file";
+//        std::ifstream file;
+//        int test;
+//        char cNum[10];
+//        file.open ("10MHz2500MHzsample.txt", std::ifstream::in);
+//        if (!file)
+//        {
+//            std::cout << "Cannot open file";
 
-////        }
-////        else
-////        {
-////            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end-1; p_dat += p_inc) {
-
-
-////                file.getline(cNum, 512, ',');
-////                ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
-////                test = atoi(cNum);
-////                std::cout << test << ", ";
-////                file.getline(cNum, 512, ',');
-////                test = atoi(cNum);
-////                std::cout << test << ",\n";
-////                ((int16_t*)p_dat)[1] = atoi(cNum); // Imag (Q)
-
-////            }
-
-
-////        }
-
-////        file.close();
-
-//        // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
-//        /*
-//        p_inc = iio_buffer_step(txbuf);
-//        p_end = iio_buffer_end(txbuf);
-//        for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
-//            // Example: fill with zeros
-//            ((int16_t*)p_dat)[0] = 300000; // Real (I)
-//            ((int16_t*)p_dat)[1] = 300000; // Imag (Q)
 //        }
-//        */
+//        else
+//        {
+//            for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end-1; p_dat += p_inc) {
 
-//        // Sample counter increment and status output
-//        nrx += nbytes_rx / iio_device_get_sample_size(rx);
-//        //ntx += nbytes_tx / iio_device_get_sample_size(tx);
-//        //printf("\tRX %8.2f MSmp, TX %8.2f MSmp\n", nrx/1e6, ntx/1e6);
-//    }
 
-//    shutdown();
-//}
+//                file.getline(cNum, 512, ',');
+//                ((int16_t*)p_dat)[0] = atoi(cNum); // Real (I)
+//                test = atoi(cNum);
+//                std::cout << test << ", ";
+//                file.getline(cNum, 512, ',');
+//                test = atoi(cNum);
+//                std::cout << test << ",\n";
+//                ((int16_t*)p_dat)[1] = atoi(cNum); // Imag (Q)
+
+//            }
+
+
+//        }
+
+//        file.close();
+
+        // WRITE: Get pointers to TX buf and write IQ to TX buf port 0
+        /*
+        p_inc = iio_buffer_step(txbuf);
+        p_end = iio_buffer_end(txbuf);
+        for (p_dat = iio_buffer_first(txbuf, tx0_i); p_dat < p_end; p_dat += p_inc) {
+            // Example: fill with zeros
+            ((int16_t*)p_dat)[0] = 300000; // Real (I)
+            ((int16_t*)p_dat)[1] = 300000; // Imag (Q)
+        }
+        */
+
+        // Sample counter increment and status output
+        //nrx += nbytes_rx / iio_device_get_sample_size(rx);
+        //ntx += nbytes_tx / iio_device_get_sample_size(tx);
+        //printf("\tRX %8.2f MSmp, TX %8.2f MSmp\n", nrx/1e6, ntx/1e6);
+   //}
+
+    //shutdown();
+}
 

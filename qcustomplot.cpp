@@ -7050,7 +7050,7 @@ QCPGrid::QCPGrid(QCPAxis *parentAxis) :
   setPen(QPen(QColor(200,200,200), 0, Qt::DotLine));
   setSubGridPen(QPen(QColor(220,220,220), 0, Qt::DotLine));
   setZeroLinePen(QPen(QColor(200,200,200), 0, Qt::SolidLine));
-  setSubGridVisible(false);
+  setSubGridVisible(true);
   setAntialiased(false);
   setAntialiasedSubGrid(false);
   setAntialiasedZeroLine(false);
@@ -8116,6 +8116,7 @@ void QCPAxis::setLabelColor(const QColor &color)
 */
 void QCPAxis::setLabel(const QString &str)
 {
+
   if (mLabel != str)
   {
     mLabel = str;

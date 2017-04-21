@@ -9,7 +9,7 @@ const double THOUSAND = 1000.0;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    CF(2.5),
+    CF(2.500),
     AB(60),
     S(.06),
     numPoints(8192),
@@ -76,8 +76,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Span2->addItem("MHz");
     ui->Span2->addItem("kHz");
 
-    ui->Mode1->addItem("Logrithmatic");
+
+   // ui->Mode1->addItem("Vrms");
+    ui->Mode1->addItem("Logarithmic");
     ui->Mode1->addItem("Linear");
+    //ui->Mode1->addItem("Watts");
+    //ui->Mode1->addItem("dBm");
 
     ui->Grid1->addItem("On");
     ui->Grid1->addItem("Off");
@@ -104,6 +108,24 @@ void MainWindow::setupGraph()
     ui->customPlot1->addGraph();
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
+
+//if (ui->CF2->currentText() == "GHz")
+    ui->customPlot1->xAxis->setLabel("GHz");
+//else
+    //ui->customPlot1->xAxis->setLabel("MHz");
+//if (ui->Mode1->currentText()=="V")
+//switch(ui->Mode1->currentText()){
+//    case V:      ui->customPlot1->yAxis->setLabel("V");
+//    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
+//    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
+//    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
+//    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
+//}
+
+
+
+
+
     //Makes sure the current theme set does not change
     if (ui->Theme1->currentText() == "Dark")
     {
@@ -119,7 +141,11 @@ void MainWindow::setupGraph()
     if (ui->Grid1->currentText() == "On")
     {
         ui->customPlot1->yAxis->setVisible(true);
+        ui->customPlot1->yAxis->setTickLabels(true);
         ui->customPlot1->xAxis->setVisible(true);
+        ui->customPlot1->xAxis->setTickLabels(true);
+       // ui->customPlot1->yAxis->
+        ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     }
     else if (ui->Grid1->currentText() == "Off")
     {
@@ -139,9 +165,61 @@ void MainWindow::setupGraph()
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
     }
 
+
+
+
+
+
+
+
     setupWindowingVectors();
 }
+//////Cursors Attempt 1
+//typedef struct {
+//        QCPItemLine *hLine;
+//        QCPItemLine *vLine;
+//}QCPCursor;
 
+//bool cursorEnabled=true;
+
+//void ManageCursor(QCustomPlot *customPlot, QCPCursor *cursor, double x, double y, QPen pen)
+//{
+//        if(cursorEnabled)
+//{
+//    if(cursor->hLine) customPlot->removeItem(cursor->hLine);
+//    cursor->hLine = new QCPItemLine(customPlot);
+//    customPlot->addGraph();
+//    customPlot->graph(0)->setData(0, cursor->hLine);
+//    cursor->hLine->setPen(pen);
+//    cursor->hLine->start->setCoords(QCPRange::minRange,y);
+//    cursor->hLine->end->setCoords(QCPRange::maxRange, y);
+
+//    if(cursor->vLine) customPlot->removeItem(cursor->vLine);
+//    cursor->vLine = new QCPItemLine(customPlot);
+//    customPlot->addGraph(cursor->vLine);
+//    cursor->vLine->setPen(pen);
+//    cursor->vLine->start->setCoords( x, QCPRange::minRange);
+//    cursor->vLine->end->setCoords( x, QCPRange::maxRange);
+//}
+
+
+//}
+
+//void MainWindow::mouseRelease(QMouseEvent* event)
+//{
+//    QCustomPlot *customPlot=ui->customPlot1;
+//    static QCPCursor cursor1, cursor2;
+//    double x=customPlot1->xAxis->pixelToCoord(event->pos().x());
+//    double y=customPlot1->yAxis->pixelToCoord(event->pos().y());
+//    if(event->button() == Qt::LeftButton)
+//        ManageCursor(customPlot1, &cursor1, x,y, QPen(Qt::black));
+//    else
+//        ManageCursor(customPlot1, &cursor2, x, y, QPen(Qt::white));
+//    customPlot1->replot();
+//    cursorEnabled=true;
+
+
+//}
 void MainWindow::setGUIValues()
 {
     ui->CF1->setText(QString::number(CF));
@@ -410,8 +488,8 @@ QVector<double> MainWindow::createDataPoints()
             {
                 std::complex<double> current = points->dequeue();
                 cleanPoints.push_back(current);
-                in[i][0] = (current.real() * windowMult.at(i))/2048;
-                in[i][1] = (current.imag() * windowMult.at(i))/2048;
+                in[i][0] = (current.real() * windowMult.at(i));
+                in[i][1] = (current.imag() * windowMult.at(i));
             }
         }
     } else {
@@ -420,8 +498,8 @@ QVector<double> MainWindow::createDataPoints()
             {
                 std::complex<double> current = points->dequeue();
                 cleanPoints.push_back(current);
-                in[i][0] = current.real()/2048;
-                in[i][1] = current.imag()/2048;
+                in[i][0] = current.real();
+                in[i][1] = current.imag();
             }
         }
     }
@@ -432,14 +510,30 @@ QVector<double> MainWindow::createDataPoints()
     {
         if (i < dPoints/2)
         {
-            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
-            double dBFS = 10*log10(Ppp);
+            //Magnitude: Unit Volts (V)
+            double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
+            //Volts RMS
+            double VRMS = V/sqrt(2);
+            //Power Watts
+            double Watts = V*V/2;
+            //Output
+            double Ppp = V;
+            double dBFS = 20*log10(VRMS);
+
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-            double Ppp = 16.6*(sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
-            double dBFS = 10*log10(Ppp);
-            isLinear ? fftPoints.push_back(Ppp) : fftPoints.push_back(dBFS);
+             //Magnitude: Unit Volts (V)
+            double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
+            //Volts  RMS
+            double VRMS = V/sqrt(2);
+            //Power Watts
+            double Watts = V*V/2;
+            //Output:
+            double Ppp = Watts;
+            double dBFS = 20*log10(VRMS);
+
+            isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
         }
     }
 
@@ -672,12 +766,12 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
     {
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
-        ui->MP2->setText("W");
+        ui->MP2->setText("V");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
-        ui->MP2->setText("dBm");
+        ui->MP2->setText("dBV");
     }
 
 }
