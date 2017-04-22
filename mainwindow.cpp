@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()), dataTimer, SLOT(stop()));
     //setup user inputs dropdown values
+
+
     ui->FFT1->addItem("256", QVariant(256));
     ui->FFT1->addItem("512", QVariant(512));
     ui->FFT1->addItem("1024", QVariant(1024));
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
+    ui->FFT1->setCurrentIndex(5);
 
     ui->WSize->addItem("Rectangular");
     ui->WSize->addItem("Blackman");
@@ -76,12 +79,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Span2->addItem("MHz");
     ui->Span2->addItem("kHz");
 
+   ui->Mode1->addItem("V");
+   ui->Mode1->addItem("Vrms");
+    ui->Mode1->addItem("dBV");
+    ui->Mode1->addItem("Watts");
+    ui->Mode1->addItem("dBm");
 
-   // ui->Mode1->addItem("Vrms");
-    ui->Mode1->addItem("Logarithmic");
-    ui->Mode1->addItem("Linear");
-    //ui->Mode1->addItem("Watts");
-    //ui->Mode1->addItem("dBm");
 
     ui->Grid1->addItem("On");
     ui->Grid1->addItem("Off");
@@ -109,18 +112,13 @@ void MainWindow::setupGraph()
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
 
-//if (ui->CF2->currentText() == "GHz")
-    ui->customPlot1->xAxis->setLabel("GHz");
-//else
-    //ui->customPlot1->xAxis->setLabel("MHz");
-//if (ui->Mode1->currentText()=="V")
-//switch(ui->Mode1->currentText()){
-//    case V:      ui->customPlot1->yAxis->setLabel("V");
-//    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
-//    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
-//    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
-//    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
-//}
+
+    if (ui->Mode1->currentText()=="V")
+       {
+          ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
+       }
+
+
 
 
 
@@ -517,10 +515,28 @@ QVector<double> MainWindow::createDataPoints()
             //Power Watts
             double Watts = V*V/2;
             //Output
-            double Ppp = V;
+
             double dBFS = 20*log10(VRMS);
 
-            isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
+            if (ui->Mode1->currentText()=="V"){
+                ffttemp1.push_back(V);
+            }
+
+            else if(ui->Mode1->currentText()=="dBV"){
+                ffttemp1.push_back(dBFS);
+            }
+            else if (ui->Mode1->currentText() == "Vrms"){
+            ffttemp1.push_back(VRMS);
+            }
+            else if (ui->Mode1->currentText() == "Watts"){
+
+            ffttemp1.push_back(Watts);
+            }
+          //  else if(ui->Mode1->currentText()=="dBm"){
+            //    ffttemp1.push_back(dBFS);
+            //}
+
+            isLinear ? ffttemp1.push_back(V) : ffttemp1.push_back(dBFS);
         } else
         {
              //Magnitude: Unit Volts (V)
@@ -585,7 +601,7 @@ void MainWindow::on_Span1_editingFinished()
         }
         else
         {
-            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+            QMessageBox::about(this, "Incorrect Value", "Enter a value between .001 and 60");
         }
     } else {
         if ( tSpan > 1 && tSpan <= 60000)
@@ -661,12 +677,17 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
     {
         cfMhz= 1;
         ui->FQ2->setText("MHz");
+        ui->customPlot1->xAxis->setLabel("MHz");
+
     }
     else
     {
         cfMhz = 0;
         ui->FQ2->setText("GHz");
+        ui->customPlot1->xAxis->setLabel("GHz");
     }
+
+
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
@@ -762,17 +783,24 @@ void MainWindow::on_AVG1_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
 {
-    if (arg1 == "Linear")
+
+    if (arg1 == "V" || arg1 == "Vrms" || arg1 == "Watts" )
     {
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
         ui->MP2->setText("V");
-    } else
+
+    }
+
+    else if (arg1 == "dBV" || arg1 == "dBM")
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
         ui->MP2->setText("dBV");
     }
+
+    ui ->MP2->setText(ui->Mode1->currentText());
+    ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
 
 }
 
