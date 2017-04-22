@@ -22,6 +22,8 @@ std::complex<double> dequeue();
 bool isEmpty();
 int size();
 void unlock();
+void clear();
+
 };
 
 #endif // CONCURRENTQUEUE_H

@@ -159,7 +159,7 @@ void MainWindow::setupGraph()
     ui->customPlot1->axisRect()->setupFullAxesBox();
     if (!isLinear)
     {
-        ui->customPlot1->yAxis->setRange(-120, 0);
+        ui->customPlot1->yAxis->setRange(-50, 50);
     } else
     {
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
@@ -254,25 +254,36 @@ void MainWindow::setupWindowingVectors()
     case 1:
         for(int i = 0; i < numPoints; i++)
         {
-            windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
+            //with Compensation
+            windowMult.push_back(2.3255814*(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1)))));
+            //Without Compensation
+            //windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
         }
         break;
     case 2:
         for(int i = 0; i < numPoints; i++)
         {
+            //With Compensation
             windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
+            //Without Compensation: Not sure why we dont need to add compensation for this. It should be 4.54545455
         }
         break;
     case 3:
         for(int i = 0; i < numPoints; i++)
         {
-            windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
+            //With Compensation
+            windowMult.push_back(2*0.5*(1-cos((2*PI*i)/(numPoints-1))));
+            //Without Compensation
+            //windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
         }
         break;
     case 4:
         for(int i = 0; i < numPoints; i++)
         {
-            windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
+            //With Compensation
+            windowMult.push_back(1.85185185*(0.54-0.46*(cos((2*PI*i)/(numPoints-1)))));
+            //Without Compensation
+            //windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
         }
         break;
     }
@@ -393,13 +404,11 @@ void MainWindow::realtimeDataSlot()
     if (key-lastFpsKey > 2) // average fps over 2 seconds
     {
         ui->statusBar->showMessage(
-                    QString("%1 FPS, Total Data points: %2, number of vectors: %3, plotPoints: %4, xValues: %5, max Point Overall: %6")
+                    QString("%1 FPS, Total Data points: %2, number of vectors: %3, total size : %4")
                     .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
                     .arg(ui->customPlot1->graph(0)->data()->size())
                     .arg(fftPoints.size())
-                    .arg(plotPoints.size())
-                    .arg(xValue.size())
-                    .arg(maxPoint)
+                    .arg(points->size())
                     , 0);
         lastFpsKey = key;
         frameCount = 0;
@@ -513,9 +522,9 @@ QVector<double> MainWindow::createDataPoints()
             //Magnitude: Unit Volts (V)
             double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             //Volts RMS
-            double VRMS = V/sqrt(2);
+           double VRMS = V/sqrt(2);
             //Power Watts
-            double Watts = V*V/2;
+           // double Watts = V*V/2;
             //Output
             double Ppp = V;
             double dBFS = 20*log10(VRMS);
@@ -528,9 +537,9 @@ QVector<double> MainWindow::createDataPoints()
             //Volts  RMS
             double VRMS = V/sqrt(2);
             //Power Watts
-            double Watts = V*V/2;
+            //double Watts = V*V/2;
             //Output:
-            double Ppp = Watts;
+            double Ppp = V;
             double dBFS = 20*log10(VRMS);
 
             isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
@@ -767,11 +776,13 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
         ui->MP2->setText("V");
+        ui->customPlot1->yAxis->setLabel("Volts");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
         ui->MP2->setText("dBV");
+        ui->customPlot1->yAxis->setLabel("dBV");
     }
 
 }
