@@ -61,6 +61,8 @@ private Q_SLOTS:
     void mouseRelease(QMouseEvent* event);
 
 
+    void on_Cursor1_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     double CF;
@@ -69,7 +71,8 @@ private:
     int numPoints;
     int tempNumPoints;
     int numberOfAverages;
-    double maxFrequency;
+    double maxFrequency1;
+    double maxFrequency2;
     double maxPoint;
     double cfMhz;
     double spanMhz;

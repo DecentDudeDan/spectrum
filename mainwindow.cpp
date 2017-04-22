@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     numPoints(8192),
     tempNumPoints(8192),
     numberOfAverages(1),
-    maxFrequency(0),
+    maxFrequency1(0),
+    maxFrequency2(0),
     maxPoint(-200),
     cfMhz(0),
     spanMhz(0),
@@ -72,8 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->AVG1->addItem("9",QVariant(9));
     ui->AVG1->addItem("10",QVariant(10));
 
-    ui->Cursor1->addItem("On");
     ui->Cursor1->addItem("Off");
+    ui->Cursor1->addItem("On");
 
 
     firstRun = false;
@@ -137,19 +138,19 @@ void MainWindow::setupGraph()
         ui->customPlot1->addGraph();
         ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
         ui->customPlot1->graph(1)->setData(XA, YA);
-     }
+    }
 
     ui->customPlot1->xAxis->setLabel("GHz");
     if (ui->CF2->currentText() == "MHz")
         ui->customPlot1->xAxis->setLabel("MHz");
-//if (ui->Mode1->currentText()=="V")
-//switch(ui->Mode1->currentText()){
-//    case V:      ui->customPlot1->yAxis->setLabel("V");
-//    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
-//    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
-//    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
-//    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
-//}
+    //if (ui->Mode1->currentText()=="V")
+    //switch(ui->Mode1->currentText()){
+    //    case V:      ui->customPlot1->yAxis->setLabel("V");
+    //    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
+    //    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
+    //    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
+    //    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
+    //}
 
 
     //Makes sure the current theme set does not change
@@ -170,8 +171,6 @@ void MainWindow::setupGraph()
         ui->customPlot1->yAxis->setTickLabels(true);
         ui->customPlot1->xAxis->setVisible(true);
         ui->customPlot1->xAxis->setTickLabels(true);
-        // ui->customPlot1->yAxis->
-        //ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     }
     else if (ui->Grid1->currentText() == "Off")
     {
@@ -207,7 +206,7 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         cursor->getVLine1()->start->setCoords( x, QCPRange::maxRange);
         cursor->getVLine1()->end->setCoords( x, THOUSAND);
         v1Index = getIndexFromHertz(x);
-
+        ui->MP1->setText(QString::number(x));
     } else
     {
         if(cursor->getVLine2())
@@ -219,6 +218,7 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         cursor->getVLine2()->start->setCoords( x, QCPRange::maxRange);
         cursor->getVLine2()->end->setCoords( x, THOUSAND);
         v2Index = getIndexFromHertz(x);
+        ui->C2MP1->setText(QString::number(x));
     }
 
 
@@ -226,27 +226,11 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
 
 void MainWindow::mousePress(QMouseEvent* event)
 {
-    mouseHeld = true;
-    cursor->setCursorEnabled(true);
+    if (ui->Cursor1->currentIndex() == 1)
+    {
+        mouseHeld = true;
+        cursor->setCursorEnabled(true);
 
-    QCustomPlot* plot = ui->customPlot1;
-    double x=plot->xAxis->pixelToCoord(event->pos().x());
-    double y=plot->yAxis->pixelToCoord(event->pos().y());
-    if(event->buttons() == Qt::LeftButton)
-    {
-        ManageCursor(plot, x,y, QPen(Qt::blue), true);
-    }
-    else
-    {
-        ManageCursor(plot, x, y, QPen(Qt::yellow), false);
-    }
-    plot->replot();
-}
-
-void MainWindow::mouseMove(QMouseEvent* event)
-{
-    if (mouseHeld)
-    {
         QCustomPlot* plot = ui->customPlot1;
         double x=plot->xAxis->pixelToCoord(event->pos().x());
         double y=plot->yAxis->pixelToCoord(event->pos().y());
@@ -259,6 +243,28 @@ void MainWindow::mouseMove(QMouseEvent* event)
             ManageCursor(plot, x, y, QPen(Qt::yellow), false);
         }
         plot->replot();
+    }
+}
+
+void MainWindow::mouseMove(QMouseEvent* event)
+{
+    if (ui->Cursor1->currentIndex() == 1)
+    {
+        if (mouseHeld)
+        {
+            QCustomPlot* plot = ui->customPlot1;
+            double x=plot->xAxis->pixelToCoord(event->pos().x());
+            double y=plot->yAxis->pixelToCoord(event->pos().y());
+            if(event->buttons() == Qt::LeftButton)
+            {
+                ManageCursor(plot, x,y, QPen(Qt::blue), true);
+            }
+            else
+            {
+                ManageCursor(plot, x, y, QPen(Qt::yellow), false);
+            }
+            plot->replot();
+        }
     }
 }
 
@@ -489,7 +495,11 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency = xValue.at(i);
+                    maxFrequency1 = xValue.at(i);
+                }
+                if (i == v2Index)
+                {
+                    maxFrequency2 = points[0].at(i);
                 }
                 avgPoint = avgPoint/points.size();
                 plotPoints.push_back(avgPoint);
@@ -501,15 +511,18 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency = points[0].at(i);
+                    maxFrequency1 = points[0].at(i);
+                }
+                if (i == v2Index)
+                {
+                    maxFrequency2 = points[0].at(i);
                 }
                 plotPoints.push_back(points[0].at(i));
             }
 
         }
-
-        ui->MP1->setText(QString::number(maxPoint));
-        ui->FQ1->setText(QString::number(maxFrequency));
+        ui->FQ1->setText(QString::number(maxFrequency1));
+        ui->C2FQ1->setText(QString::number(maxFrequency2));
     }
 
 }
@@ -854,4 +867,16 @@ void MainWindow::on_Settings_clicked()
 void MainWindow::on_w3close_clicked()
 {
     ui->widget->hide();
+}
+
+void MainWindow::on_Cursor1_currentIndexChanged(int index)
+{
+    if (index == 0)
+    {
+        ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    } else
+    {
+        ui->customPlot1->setInteractions(NULL);
+    }
+
 }
