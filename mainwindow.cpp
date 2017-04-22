@@ -72,6 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->AVG1->addItem("9",QVariant(9));
     ui->AVG1->addItem("10",QVariant(10));
 
+    ui->Cursor1->addItem("On");
+    ui->Cursor1->addItem("Off");
+
 
     firstRun = false;
 
@@ -113,23 +116,40 @@ void MainWindow::setupGraph()
     //adds the graph
     ui->customPlot1->addGraph();
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    //adds the line to the central frequency graph
+    QVector<double> YA(5000), XA(5000);
 
+    for (int i = 0; i < 5000; i++)
+    {
+        YA[i] = i - 2500;
+        XA[i] = ui->CF1->text().toDouble();
+    }
+    ui->customPlot1->addGraph();
+    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+    ui->customPlot1->graph(1)->setData(XA, YA);
+    if(ui->CF2->currentText() == "MHz")
+    {
+        for (int i = 0; i < 5000; i++)
+        {
+            YA[i] = i - 2500;
+            XA[i] = (ui->CF1->text().toDouble())/1000;
+        }
+        ui->customPlot1->addGraph();
+        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+        ui->customPlot1->graph(1)->setData(XA, YA);
+     }
 
-    //if (ui->CF2->currentText() == "GHz")
     ui->customPlot1->xAxis->setLabel("GHz");
-    //else
-    //ui->customPlot1->xAxis->setLabel("MHz");
-    //if (ui->Mode1->currentText()=="V")
-    //switch(ui->Mode1->currentText()){
-    //    case V:      ui->customPlot1->yAxis->setLabel("V");
-    //    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
-    //    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
-    //    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
-    //    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
-    //}
-
-
-
+    if (ui->CF2->currentText() == "MHz")
+        ui->customPlot1->xAxis->setLabel("MHz");
+//if (ui->Mode1->currentText()=="V")
+//switch(ui->Mode1->currentText()){
+//    case V:      ui->customPlot1->yAxis->setLabel("V");
+//    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
+//    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
+//    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
+//    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
+//}
 
 
     //Makes sure the current theme set does not change
@@ -446,7 +466,6 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     double endIndex = (dPoints/.06)*temp2;
     double xinc = 0;
     maxPoint = -2000;
-    maxFrequency = 0;
     double shift = S/2;
 
 
@@ -486,7 +505,6 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 }
                 plotPoints.push_back(points[0].at(i));
             }
-
 
         }
 
@@ -679,6 +697,7 @@ void MainWindow::on_CF1_editingFinished()
             QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
         }
     }
+
 }
 
 
@@ -699,11 +718,15 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
     {
         cfMhz= 1;
         ui->FQ2->setText("MHz");
+        ui->C2FQ2->setText("MHz");
+        ui->customPlot1->xAxis->setLabel("MHz");
     }
     else
     {
         cfMhz = 0;
         ui->FQ2->setText("GHz");
+        ui->C2FQ2->setText("GHz");
+        ui->customPlot1->xAxis->setLabel("GHz");
     }
 }
 
@@ -805,11 +828,13 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
         isLinear = true;
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
         ui->MP2->setText("V");
+        ui->C2MP2->setText("V");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
         ui->MP2->setText("dBV");
+        ui->C2MP2->setText("dBV");
     }
 
 }
