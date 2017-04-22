@@ -145,7 +145,6 @@ bool libThread::cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_c
 //    float rand_mag = 0;
 //    float rand_freq = 0;
 //    points->clear();
-
 //    while(!stop)
 //    {
 //        if(points)
@@ -164,7 +163,6 @@ bool libThread::cfg_ad9361_streaming_ch(struct iio_context *ctx, struct stream_c
 //            }
 //        }
 //    }
-
 //    qDebug() << "exiting run function";
 //}
 
