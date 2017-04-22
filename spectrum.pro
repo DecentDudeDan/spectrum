@@ -15,12 +15,14 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     qcustomplot.cpp \
     concurrentqueue.cpp \
-    libthread.cpp
+    libthread.cpp \
+    speccursor.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
     concurrentqueue.h \
-    libthread.h
+    libthread.h \
+    speccursor.h
 
 FORMS    += mainwindow.ui
 

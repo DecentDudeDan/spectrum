@@ -20,9 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
     cfMhz(0),
     spanMhz(0),
     firstRun(true),
-    isLinear(false)
+    isLinear(false),
+    mouseHeld(false)
 {
     dataTimer = new QTimer();
+    cursor = new SpecCursor();
 
     ui->setupUi(this);
 
@@ -35,6 +37,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot when the timer times out:
     connect(dataTimer, SIGNAL(timeout()), this, SLOT(realtimeDataSlot()));
     connect(ui->StopButton, SIGNAL(clicked()), dataTimer, SLOT(stop()));
+    connect(ui->customPlot1, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(mouseRelease(QMouseEvent*)));
+    connect(ui->customPlot1, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMove(QMouseEvent*)));
+    connect(ui->customPlot1, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress(QMouseEvent*)));
+
     //setup user inputs dropdown values
     ui->FFT1->addItem("256", QVariant(256));
     ui->FFT1->addItem("512", QVariant(512));
@@ -77,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Span2->addItem("kHz");
 
 
-   // ui->Mode1->addItem("Vrms");
+    // ui->Mode1->addItem("Vrms");
     ui->Mode1->addItem("Logarithmic");
     ui->Mode1->addItem("Linear");
     //ui->Mode1->addItem("Watts");
@@ -109,18 +115,18 @@ void MainWindow::setupGraph()
     ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
 
 
-//if (ui->CF2->currentText() == "GHz")
+    //if (ui->CF2->currentText() == "GHz")
     ui->customPlot1->xAxis->setLabel("GHz");
-//else
+    //else
     //ui->customPlot1->xAxis->setLabel("MHz");
-//if (ui->Mode1->currentText()=="V")
-//switch(ui->Mode1->currentText()){
-//    case V:      ui->customPlot1->yAxis->setLabel("V");
-//    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
-//    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
-//    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
-//    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
-//}
+    //if (ui->Mode1->currentText()=="V")
+    //switch(ui->Mode1->currentText()){
+    //    case V:      ui->customPlot1->yAxis->setLabel("V");
+    //    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
+    //    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
+    //    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
+    //    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
+    //}
 
 
 
@@ -144,8 +150,8 @@ void MainWindow::setupGraph()
         ui->customPlot1->yAxis->setTickLabels(true);
         ui->customPlot1->xAxis->setVisible(true);
         ui->customPlot1->xAxis->setTickLabels(true);
-       // ui->customPlot1->yAxis->
-        ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+        // ui->customPlot1->yAxis->
+        //ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     }
     else if (ui->Grid1->currentText() == "Off")
     {
@@ -165,61 +171,82 @@ void MainWindow::setupGraph()
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
     }
 
-
-
-
-
-
-
-
     setupWindowingVectors();
 }
-//////Cursors Attempt 1
-//typedef struct {
-//        QCPItemLine *hLine;
-//        QCPItemLine *vLine;
-//}QCPCursor;
 
-//bool cursorEnabled=true;
+void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, bool firstLine)
+{
+    if(firstLine)
+    {
+        if(cursor->getVLine1())
+        {
+            plot->removeItem(cursor->getVLine1());
+        }
+        cursor->setVLine1(new QCPItemLine(plot));
+        cursor->getVLine1()->setPen(pen);
+        cursor->getVLine1()->start->setCoords( x, QCPRange::maxRange);
+        cursor->getVLine1()->end->setCoords( x, THOUSAND);
+        v1Index = getIndexFromHertz(x);
 
-//void ManageCursor(QCustomPlot *customPlot, QCPCursor *cursor, double x, double y, QPen pen)
-//{
-//        if(cursorEnabled)
-//{
-//    if(cursor->hLine) customPlot->removeItem(cursor->hLine);
-//    cursor->hLine = new QCPItemLine(customPlot);
-//    customPlot->addGraph();
-//    customPlot->graph(0)->setData(0, cursor->hLine);
-//    cursor->hLine->setPen(pen);
-//    cursor->hLine->start->setCoords(QCPRange::minRange,y);
-//    cursor->hLine->end->setCoords(QCPRange::maxRange, y);
-
-//    if(cursor->vLine) customPlot->removeItem(cursor->vLine);
-//    cursor->vLine = new QCPItemLine(customPlot);
-//    customPlot->addGraph(cursor->vLine);
-//    cursor->vLine->setPen(pen);
-//    cursor->vLine->start->setCoords( x, QCPRange::minRange);
-//    cursor->vLine->end->setCoords( x, QCPRange::maxRange);
-//}
-
-
-//}
-
-//void MainWindow::mouseRelease(QMouseEvent* event)
-//{
-//    QCustomPlot *customPlot=ui->customPlot1;
-//    static QCPCursor cursor1, cursor2;
-//    double x=customPlot1->xAxis->pixelToCoord(event->pos().x());
-//    double y=customPlot1->yAxis->pixelToCoord(event->pos().y());
-//    if(event->button() == Qt::LeftButton)
-//        ManageCursor(customPlot1, &cursor1, x,y, QPen(Qt::black));
-//    else
-//        ManageCursor(customPlot1, &cursor2, x, y, QPen(Qt::white));
-//    customPlot1->replot();
-//    cursorEnabled=true;
+    } else
+    {
+        if(cursor->getVLine2())
+        {
+            plot->removeItem(cursor->getVLine2());
+        }
+        cursor->setVLine2(new QCPItemLine(plot));
+        cursor->getVLine2()->setPen(pen);
+        cursor->getVLine2()->start->setCoords( x, QCPRange::maxRange);
+        cursor->getVLine2()->end->setCoords( x, THOUSAND);
+        v2Index = getIndexFromHertz(x);
+    }
 
 
-//}
+}
+
+void MainWindow::mousePress(QMouseEvent* event)
+{
+    mouseHeld = true;
+    cursor->setCursorEnabled(true);
+
+    QCustomPlot* plot = ui->customPlot1;
+    double x=plot->xAxis->pixelToCoord(event->pos().x());
+    double y=plot->yAxis->pixelToCoord(event->pos().y());
+    if(event->buttons() == Qt::LeftButton)
+    {
+        ManageCursor(plot, x,y, QPen(Qt::blue), true);
+    }
+    else
+    {
+        ManageCursor(plot, x, y, QPen(Qt::yellow), false);
+    }
+    plot->replot();
+}
+
+void MainWindow::mouseMove(QMouseEvent* event)
+{
+    if (mouseHeld)
+    {
+        QCustomPlot* plot = ui->customPlot1;
+        double x=plot->xAxis->pixelToCoord(event->pos().x());
+        double y=plot->yAxis->pixelToCoord(event->pos().y());
+        if(event->buttons() == Qt::LeftButton)
+        {
+            ManageCursor(plot, x,y, QPen(Qt::blue), true);
+        }
+        else
+        {
+            ManageCursor(plot, x, y, QPen(Qt::yellow), false);
+        }
+        plot->replot();
+    }
+}
+
+void MainWindow::mouseRelease(QMouseEvent *event)
+{
+    mouseHeld = false;
+}
+
 void MainWindow::setGUIValues()
 {
     ui->CF1->setText(QString::number(CF));
@@ -380,7 +407,7 @@ void MainWindow::realtimeDataSlot()
         }
 
         // rescale value (vertical) axis to fit the current data:
-        //ui->customPlot1->graph(0)->rescaleValueAxis();
+        ui->customPlot1->graph(0)->rescaleValueAxis(true);
 
         ui->customPlot1->replot();
         lastPointKey = key;
@@ -439,11 +466,11 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
-                        if (i >= 0 && i <= points[j].size())
-                        {
-                            //maxFrequency = xValue.at(i);
-                        }
                     }
+                }
+                if (i == v1Index)
+                {
+                    maxFrequency = xValue.at(i);
                 }
                 avgPoint = avgPoint/points.size();
                 plotPoints.push_back(avgPoint);
@@ -452,10 +479,10 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 if(points[0].at(i) > maxPoint)
                 {
                     maxPoint = points[0].at(i);
-                    if (i >= 0 && i <= points[0].size())
-                    {
-                        //maxFrequency = xValue.at(i);
-                    }
+                }
+                if (i == v1Index)
+                {
+                    maxFrequency = points[0].at(i);
                 }
                 plotPoints.push_back(points[0].at(i));
             }
@@ -523,7 +550,7 @@ QVector<double> MainWindow::createDataPoints()
             isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
         } else
         {
-             //Magnitude: Unit Volts (V)
+            //Magnitude: Unit Volts (V)
             double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
             //Volts  RMS
             double VRMS = V/sqrt(2);
@@ -556,6 +583,17 @@ QVector<double> MainWindow::createDataPoints()
 
     return fftPoints;
 
+}
+
+int MainWindow::getIndexFromHertz(double hertz)
+{
+    double dPoints = numPoints;
+    double temp = ((.06-S)/2);
+
+    double v1 = hertz - CF + (S/2) + temp;
+    double v2 = dPoints/.06;
+
+    return v1*v2;
 }
 
 void MainWindow::on_FFT1_currentIndexChanged(int index)
@@ -649,7 +687,7 @@ void MainWindow::on_AB1_editingFinished()
     double tAB = ui->AB1->text().toDouble();
     if (tAB)
     {
-        tempAB = tAB;
+        AB = tAB;
     }
 }
 

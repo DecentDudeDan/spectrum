@@ -156,8 +156,8 @@ void libThread::run()
                     rand_mag = (qrand() % 10);
                     rand_freq = (qrand() %100);
                     double freq1 = 3;
-                    double real = (10*cos(2*3.14159265*freq1*i));//+rand_mag*cos(2*3.14159265*rand_freq*i);//*rand_num;
-                    double img =  (10*sin(2*3.14159265*freq1*i));//+rand_mag*sin(2*3.14159265*rand_freq*i);//*rand_num;
+                    double real = (10*cos(2*3.14159265*freq1*i))+rand_mag*cos(2*3.14159265*rand_freq*i);//*rand_num;
+                    double img =  (10*sin(2*3.14159265*freq1*i))+rand_mag*sin(2*3.14159265*rand_freq*i);//*rand_num;
                     points->enqueue({real, img});
                 }
             }
