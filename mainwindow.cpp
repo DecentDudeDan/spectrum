@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->FFT1->addItem("16384", QVariant(16384));
     ui->FFT1->addItem("32768", QVariant(32768));
     ui->FFT1->addItem("65536", QVariant(65536));
+    ui->FFT1->setCurrentIndex(5);
 
     ui->WSize->addItem("Rectangular");
     ui->WSize->addItem("Blackman");
@@ -623,7 +624,23 @@ QVector<double> MainWindow::createDataPoints()
             //Output
             //double Ppp = V;
             double dBFS = 10*log10(V);
+//            if (ui->Mode1->currentText()=="V"){
+//                           ffttemp1.push_back(V);
+//                       }
 
+//                       else if(ui->Mode1->currentText()=="dBV"){
+//                           ffttemp1.push_back(dBFS);
+//                       }
+//                       else if (ui->Mode1->currentText() == "Vrms"){
+//                       ffttemp1.push_back(VRMS);
+//                       }
+//                       else if (ui->Mode1->currentText() == "Watts"){
+
+//                       ffttemp1.push_back(Watts);
+//                       }
+//                     //  else if(ui->Mode1->currentText()=="dBm"){
+//                       //    ffttemp1.push_back(dBFS);
+//                       //}
             isLinear ? ffttemp1.push_back(V) : ffttemp1.push_back(dBFS);
         } else
         {
@@ -636,7 +653,23 @@ QVector<double> MainWindow::createDataPoints()
             //Output:
             //double Ppp = V;
             double dBFS = 10*log10(V);
+            //            if (ui->Mode1->currentText()=="V"){
+            //                           ffttemp1.push_back(V);
+            //                       }
 
+            //                       else if(ui->Mode1->currentText()=="dBV"){
+            //                           ffttemp1.push_back(dBFS);
+            //                       }
+            //                       else if (ui->Mode1->currentText() == "Vrms"){
+            //                       ffttemp1.push_back(VRMS);
+            //                       }
+            //                       else if (ui->Mode1->currentText() == "Watts"){
+
+            //                       ffttemp1.push_back(Watts);
+            //                       }
+            //                     //  else if(ui->Mode1->currentText()=="dBm"){
+            //                       //    ffttemp1.push_back(dBFS);
+            //                       //}
             isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
         }
     }
@@ -906,6 +939,26 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
         ui->PeakPwrLabel->setText("dBm");
         ui->VertDeltaLabel->setText("dBm");
     }
+
+
+//    if (arg1 == "V" || arg1 == "Vrms" || arg1 == "Watts" )
+//    {
+//        isLinear = true;
+//        ui->customPlot1->yAxis->setRange(-0.001,0.15);
+//        ui->MP2->setText("V");
+
+//    }
+
+//    else if (arg1 == "dBV" || arg1 == "dBM")
+//    {
+//        isLinear = false;
+//        ui->customPlot1->yAxis->setRange(-120,0);
+//        ui->MP2->setText("dBV");
+//    }
+
+//    ui ->MP2->setText(ui->Mode1->currentText());
+//    ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
+
 
 }
 
