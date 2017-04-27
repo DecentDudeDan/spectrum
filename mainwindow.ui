@@ -800,6 +800,63 @@
        <string notr="true">background-color: rgb(111, 111, 111);</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="22">
+        <widget class="QPushButton" name="Export">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Export</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLineEdit" name="MP1">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="15" colspan="2">
+        <widget class="QLabel" name="C1_2">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Horizontal Delta</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="2">
         <widget class="QLineEdit" name="Peak_Freq">
          <property name="minimumSize">
@@ -914,26 +971,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="18">
-        <widget class="QLabel" name="VertDeltaLabel">
-         <property name="minimumSize">
-          <size>
-           <width>51</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>51</width>
-           <height>22</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="19">
+       <item row="1" column="20">
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -950,13 +988,13 @@
         <widget class="QLabel" name="C1">
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
@@ -965,7 +1003,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="20">
+       <item row="1" column="21">
         <widget class="QPushButton" name="startButton">
          <property name="minimumSize">
           <size>
@@ -987,7 +1025,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="21">
+       <item row="1" column="22">
         <widget class="QPushButton" name="StopButton">
          <property name="minimumSize">
           <size>
@@ -1019,25 +1057,6 @@
         </widget>
        </item>
        <item row="0" column="21">
-        <widget class="QPushButton" name="Export">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Export</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="20">
         <widget class="QPushButton" name="Settings">
          <property name="minimumSize">
           <size>
@@ -1098,13 +1117,13 @@
         <widget class="QLineEdit" name="VertDeltBox">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>60</width>
            <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
+           <width>60</width>
            <height>20</height>
           </size>
          </property>
@@ -1170,25 +1189,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="9">
-        <widget class="QLineEdit" name="MP1">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="12">
         <widget class="QLineEdit" name="C2FQ1">
          <property name="minimumSize">
@@ -1250,13 +1250,13 @@
         <widget class="QLabel" name="C2">
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
@@ -1288,7 +1288,7 @@
         <widget class="QLineEdit" name="C2MP1">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>60</width>
            <height>20</height>
           </size>
          </property>
@@ -1326,7 +1326,7 @@
         <widget class="QLineEdit" name="HorzDeltaBox">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>60</width>
            <height>20</height>
           </size>
          </property>
@@ -1354,22 +1354,22 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="15" colspan="2">
-        <widget class="QLabel" name="C1_2">
+       <item row="1" column="18">
+        <widget class="QLabel" name="VertDeltaLabel">
          <property name="minimumSize">
           <size>
-           <width>90</width>
-           <height>20</height>
+           <width>25</width>
+           <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>100</width>
-           <height>20</height>
+           <width>30</width>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
-          <string>Horizontal Delta</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -1403,7 +1403,7 @@
      <x>0</x>
      <y>0</y>
      <width>1325</width>
-     <height>19</height>
+     <height>15</height>
     </rect>
    </property>
   </widget>
