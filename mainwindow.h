@@ -71,8 +71,9 @@ private:
     int numPoints;
     int tempNumPoints;
     int numberOfAverages;
-    double maxFrequency1;
-    double maxFrequency2;
+    double maxFrequency;
+    double maxPower1;
+    double maxPower2;
     double maxPoint;
     double cfMhz;
     double spanMhz;

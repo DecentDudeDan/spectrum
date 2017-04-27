@@ -15,9 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     numPoints(8192),
     tempNumPoints(8192),
     numberOfAverages(1),
-    //maxFrequency(0),
-    maxFrequency1(0),
-    maxFrequency2(0),
+    maxFrequency(0),
+    maxPower1(0),
+    maxPower2(0),
     maxPoint(-200),
     cfMhz(0),
     spanMhz(0),
@@ -505,7 +505,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     double endIndex = (dPoints/.06)*temp2;
     double xinc = 0;
     maxPoint = -2000;
-    //maxFrequency = 0;
+    maxFrequency = 0;
     double shift = S/2;
 
 
@@ -524,22 +524,23 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     avgPoint += points[j].at(i);
                     if(points[j].at(i) > maxPoint)
                     {
+                        maxFrequency = xValue.at(i);
                         maxPoint = points[j].at(i);
                         //ui->Peak_Pwr->setText(QString::number(maxPoint));
 //                        if(i >=0 && i <= points[j].size())
 //                        {
-//                            //maxFrequency = xValue.at(i);
+//                           maxFrequency = xValue.at(i);
 //                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
 //                        }
                     }
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency1 = xValue.at(i);
+                    maxPower1 = xValue.at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxFrequency2 = points[0].at(i);
+                    maxPower2 = points[0].at(i);
                 }
                 avgPoint = avgPoint/points.size();
                 plotPoints.push_back(avgPoint);
@@ -548,24 +549,25 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 if(points[0].at(i) > maxPoint)
                 {
                     maxPoint = points[0].at(i);
+                    //maxFrequency = xValue.at(i);
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency1 = points[0].at(i);
+                    maxPower1 = points[0].at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxFrequency2 = points[0].at(i);
+                    maxPower2 = points[0].at(i);
                 }
                 plotPoints.push_back(points[0].at(i));
             }
 
         }
         ui->Peak_Pwr->setText(QString::number(maxPoint));
-        //ui->Peak_Freq->setText(QString::number());
-        ui->FQ1->setText(QString::number(maxFrequency1));
-        ui->C2FQ1->setText(QString::number(maxFrequency2));
-        double vertdelt = maxFrequency1 - maxFrequency2;
+        ui->Peak_Freq->setText(QString::number(maxFrequency));
+        ui->FQ1->setText(QString::number(maxPower1));
+        ui->C2FQ1->setText(QString::number(maxPower2));
+        double vertdelt = maxPower1 - maxPower2;
         ui->VertDeltBox->setText(QString::number(vertdelt));
     }
 
