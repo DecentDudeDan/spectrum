@@ -549,6 +549,22 @@ QVector<double> MainWindow::createDataPoints()
             double Ppp = Watts;
             double dBFS = 20*log10(VRMS);
 
+            if (ui->Mode1->currentText()=="V"){
+                ffttemp1.push_back(V);
+
+            }
+
+            else if(ui->Mode1->currentText()=="dBV"){
+                ffttemp1.push_back(dBFS);
+            }
+            else if (ui->Mode1->currentText() == "Vrms"){
+            ffttemp1.push_back(VRMS);
+            }
+            else if (ui->Mode1->currentText() == "Watts"){
+
+            ffttemp1.push_back(Watts);
+            }
+
             isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
         }
     }
