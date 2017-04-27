@@ -186,8 +186,8 @@ void libThread::run()
     signal(SIGINT, handle_sig);
 
     // RX stream config
-    rxcfg.bw_hz = MHZ(30);   // value in AB for MHz rf bandwidth
-    rxcfg.fs_hz = MHZ(mAB);   // 2.5 MS/s rx sample rate
+    rxcfg.bw_hz = MHZ(mAB);   // value in AB for MHz rf bandwidth
+    rxcfg.fs_hz = MHZ(60);   // 2.5 MS/s rx sample rate
     rxcfg.lo_hz = GHZ(mCF); // value in CF for GHz rf frequency
     rxcfg.rfport = "A_BALANCED"; // port A (select for rf freq.)
 
@@ -210,8 +210,8 @@ void libThread::run()
 //    assert(libThread::cfg_ad9361_streaming_ch(ctx, &txcfg, TX, 0) && "TX port 0 not found");
 
     printf("* Initializing AD9361 IIO streaming channels\n");
-    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 0, &rx0_i) && "RX chan i not found");
-    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 1, &rx0_q) && "RX chan q not found");
+    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 2, &rx0_i) && "RX chan i not found");
+    assert(libThread::get_ad9361_stream_ch(ctx, RX, rx, 3, &rx0_q) && "RX chan q not found");
 //    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 0, &tx0_i) && "TX chan i not found");
 //    assert(libThread::get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q) && "TX chan q not found");
 

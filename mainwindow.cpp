@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     numPoints(8192),
     tempNumPoints(8192),
     numberOfAverages(1),
+    //maxFrequency(0),
     maxFrequency1(0),
     maxFrequency2(0),
     maxPoint(-200),
@@ -116,29 +117,29 @@ void MainWindow::setupGraph()
 
     //adds the graph
     ui->customPlot1->addGraph();
-    ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+   // ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
     //adds the line to the central frequency graph
-    QVector<double> YA(5000), XA(5000);
+   // QVector<double> YA(5000), XA(5000);
 
-    for (int i = 0; i < 5000; i++)
-    {
-        YA[i] = i - 2500;
-        XA[i] = ui->CF1->text().toDouble();
-    }
-    ui->customPlot1->addGraph();
-    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-    ui->customPlot1->graph(1)->setData(XA, YA);
-    if(ui->CF2->currentText() == "MHz")
-    {
-        for (int i = 0; i < 5000; i++)
-        {
-            YA[i] = i - 2500;
-            XA[i] = (ui->CF1->text().toDouble())/1000;
-        }
-        ui->customPlot1->addGraph();
-        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-        ui->customPlot1->graph(1)->setData(XA, YA);
-    }
+//    for (int i = 0; i < 5000; i++)
+//    {
+//        YA[i] = i - 2500;
+//        XA[i] = ui->CF1->text().toDouble();
+//    }
+//    ui->customPlot1->addGraph();
+//    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+//    ui->customPlot1->graph(1)->setData(XA, YA);
+//    if(ui->CF2->currentText() == "MHz")
+//    {
+//        for (int i = 0; i < 5000; i++)
+//        {
+//            YA[i] = i - 2500;
+//            XA[i] = (ui->CF1->text().toDouble())/1000;
+//        }
+//        ui->customPlot1->addGraph();
+//        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+//        ui->customPlot1->graph(1)->setData(XA, YA);
+//    }
 
     ui->customPlot1->xAxis->setLabel("GHz");
     if (ui->CF2->currentText() == "MHz")
@@ -193,8 +194,13 @@ void MainWindow::setupGraph()
     setupWindowingVectors();
 }
 
+//Setting Globals here... Sorry Danny.
+double c1powerval = 0;
+double c2powerval = 0;
+double horzdelt = 0;
 void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, bool firstLine)
 {
+
     if(firstLine)
     {
         if(cursor->getVLine1())
@@ -206,7 +212,11 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         cursor->getVLine1()->start->setCoords( x, QCPRange::maxRange);
         cursor->getVLine1()->end->setCoords( x, THOUSAND);
         v1Index = getIndexFromHertz(x);
+
         ui->MP1->setText(QString::number(x));
+        c1powerval = x;
+
+
     } else
     {
         if(cursor->getVLine2())
@@ -218,9 +228,13 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         cursor->getVLine2()->start->setCoords( x, QCPRange::maxRange);
         cursor->getVLine2()->end->setCoords( x, THOUSAND);
         v2Index = getIndexFromHertz(x);
-        ui->C2MP1->setText(QString::number(x));
-    }
 
+        ui->C2MP1->setText(QString::number(x));
+        c2powerval = x;
+
+    }
+    horzdelt = fabs((c1powerval -c2powerval)*1000);
+    ui->HorzDeltaBox->setText(QString::number(horzdelt));
 
 }
 
@@ -236,11 +250,11 @@ void MainWindow::mousePress(QMouseEvent* event)
         double y=plot->yAxis->pixelToCoord(event->pos().y());
         if(event->buttons() == Qt::LeftButton)
         {
-            ManageCursor(plot, x,y, QPen(Qt::blue), true);
+            ManageCursor(plot, x,y, QPen(Qt::green), true);
         }
         else
         {
-            ManageCursor(plot, x, y, QPen(Qt::yellow), false);
+            ManageCursor(plot, x, y, QPen(Qt::green), false);
         }
         plot->replot();
     }
@@ -257,11 +271,11 @@ void MainWindow::mouseMove(QMouseEvent* event)
             double y=plot->yAxis->pixelToCoord(event->pos().y());
             if(event->buttons() == Qt::LeftButton)
             {
-                ManageCursor(plot, x,y, QPen(Qt::blue), true);
+                ManageCursor(plot, x,y, QPen(Qt::green), true);
             }
             else
             {
-                ManageCursor(plot, x, y, QPen(Qt::yellow), false);
+                ManageCursor(plot, x, y, QPen(Qt::green), false);
             }
             plot->replot();
         }
@@ -309,6 +323,8 @@ void MainWindow::setupWindowingVectors()
         {
             //with Compensation
             windowMult.push_back(2.3255814*(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1)))));
+            double RBW = 60000000*1.69/numPoints;
+            ui->RBW1->setText(QString::number(RBW));
             //Without Compensation
             //windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
         }
@@ -318,6 +334,9 @@ void MainWindow::setupWindowingVectors()
         {
             //With Compensation
             windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
+
+            double RBW = 60000000*3.77/numPoints;
+            ui->RBW1->setText(QString::number(RBW));
             //Without Compensation: Not sure why we dont need to add compensation for this. It should be 4.54545455
         }
         break;
@@ -326,6 +345,8 @@ void MainWindow::setupWindowingVectors()
         {
             //With Compensation
             windowMult.push_back(2*0.5*(1-cos((2*PI*i)/(numPoints-1))));
+            double RBW = 60000000*1.5/numPoints;
+            ui->RBW1->setText(QString::number(RBW));
             //Without Compensation
             //windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
         }
@@ -335,6 +356,8 @@ void MainWindow::setupWindowingVectors()
         {
             //With Compensation
             windowMult.push_back(1.85185185*(0.54-0.46*(cos((2*PI*i)/(numPoints-1)))));
+            double RBW = 60000000*1.36/numPoints;
+            ui->RBW1->setText(QString::number(RBW));
             //Without Compensation
             //windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
         }
@@ -481,6 +504,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     double endIndex = (dPoints/.06)*temp2;
     double xinc = 0;
     maxPoint = -2000;
+    //maxFrequency = 0;
     double shift = S/2;
 
 
@@ -500,6 +524,12 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
+                        //ui->Peak_Pwr->setText(QString::number(maxPoint));
+//                        if(i >=0 && i <= points[j].size())
+//                        {
+//                            //maxFrequency = xValue.at(i);
+//                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
+//                        }
                     }
                 }
                 if (i == v1Index)
@@ -530,8 +560,12 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
             }
 
         }
+        ui->Peak_Pwr->setText(QString::number(maxPoint));
+        //ui->Peak_Freq->setText(QString::number());
         ui->FQ1->setText(QString::number(maxFrequency1));
         ui->C2FQ1->setText(QString::number(maxFrequency2));
+        double vertdelt = maxFrequency1 - maxFrequency2;
+        ui->VertDeltBox->setText(QString::number(vertdelt));
     }
 
 }
@@ -555,8 +589,8 @@ QVector<double> MainWindow::createDataPoints()
             {
                 std::complex<double> current = points->dequeue();
                 cleanPoints.push_back(current);
-                in[i][0] = (current.real() * windowMult.at(i));
-                in[i][1] = (current.imag() * windowMult.at(i));
+                in[i][0] = (current.real() * windowMult.at(i)/2048);
+                in[i][1] = (current.imag() * windowMult.at(i)/2048);
             }
         }
     } else {
@@ -565,8 +599,11 @@ QVector<double> MainWindow::createDataPoints()
             {
                 std::complex<double> current = points->dequeue();
                 cleanPoints.push_back(current);
-                in[i][0] = current.real();
-                in[i][1] = current.imag();
+                in[i][0] = (current.real()/2048);
+                in[i][1] = (current.imag()/2048);
+                double RBW = 60000000/numPoints;
+                ui->RBW1->setText(QString::number(RBW));
+
             }
         }
     }
@@ -578,27 +615,27 @@ QVector<double> MainWindow::createDataPoints()
         if (i < dPoints/2)
         {
             //Magnitude: Unit Volts (V)
-            double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
+            double V = ((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
             //Volts RMS
-           double VRMS = V/sqrt(2);
+           //double VRMS = V/sqrt(2);
             //Power Watts
-           // double Watts = V*V/2;
+            //double Watts = V*V/2;
             //Output
-            double Ppp = V;
-            double dBFS = 20*log10(VRMS);
+            //double Ppp = V;
+            double dBFS = 10*log10(V);
 
-            isLinear ? ffttemp1.push_back(Ppp) : ffttemp1.push_back(dBFS);
+            isLinear ? ffttemp1.push_back(V) : ffttemp1.push_back(dBFS);
         } else
         {
             //Magnitude: Unit Volts (V)
-            double V = (sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]))/(dPoints);
+            double V =((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
             //Volts  RMS
-            double VRMS = V/sqrt(2);
+            //double VRMS = V/sqrt(2);
             //Power Watts
-            //double Watts = V*V/2;
+            double Watts = V*V/2;
             //Output:
-            double Ppp = V;
-            double dBFS = 20*log10(VRMS);
+            //double Ppp = V;
+            double dBFS = 10*log10(V);
 
             isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
         }
@@ -736,12 +773,15 @@ void MainWindow::on_AB1_editingFinished()
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
+     ui->HorzDeltaLabel->setText("MHz");
     if (arg1 == "MHz")
     {
         cfMhz= 1;
         ui->FQ2->setText("MHz");
         ui->C2FQ2->setText("MHz");
         ui->customPlot1->xAxis->setLabel("MHz");
+        ui->PeakFreqLabel->setText("MHz");
+
     }
     else
     {
@@ -749,6 +789,8 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
         ui->FQ2->setText("GHz");
         ui->C2FQ2->setText("GHz");
         ui->customPlot1->xAxis->setLabel("GHz");
+        ui->PeakFreqLabel->setText("GHz");
+        //ui->HorzDeltaLabel->setText("GHz");
     }
 }
 
@@ -852,13 +894,17 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
         ui->MP2->setText("V");
         ui->customPlot1->yAxis->setLabel("Volts");
         ui->C2MP2->setText("V");
+        ui->PeakPwrLabel->setText("V");
+        ui->VertDeltaLabel->setText("V");
     } else
     {
         isLinear = false;
         ui->customPlot1->yAxis->setRange(-120,0);
-        ui->MP2->setText("dBV");
-        ui->customPlot1->yAxis->setLabel("dBV");
-        ui->C2MP2->setText("dBV");
+        ui->MP2->setText("dBm");
+        ui->customPlot1->yAxis->setLabel("dBm");
+        ui->C2MP2->setText("dBm");
+        ui->PeakPwrLabel->setText("dBm");
+        ui->VertDeltaLabel->setText("dBm");
     }
 
 }
