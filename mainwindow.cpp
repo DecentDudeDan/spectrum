@@ -798,7 +798,9 @@ void MainWindow::on_AB1_editingFinished()
     double tAB = ui->AB1->text().toDouble();
     if (tAB)
     {
+        endRunningThread();
         AB = tAB;
+        refreshPlotting();
     }
 }
 

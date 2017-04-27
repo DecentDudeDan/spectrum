@@ -1136,13 +1136,13 @@
         <widget class="QLineEdit" name="Peak_Pwr">
          <property name="minimumSize">
           <size>
-           <width>60</width>
+           <width>62</width>
            <height>22</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>62</width>
            <height>22</height>
           </size>
          </property>
