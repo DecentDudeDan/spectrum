@@ -57,6 +57,7 @@ private Q_SLOTS:
     void on_w3close_clicked();
     void on_Export_clicked();
     void on_AVG1_currentTextChanged(const QString &arg1);
+    float getOffset(float freq);
     void mousePress(QMouseEvent* event);
     void mouseMove(QMouseEvent* event);
     void mouseRelease(QMouseEvent* event);

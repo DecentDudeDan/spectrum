@@ -246,6 +246,30 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
 
 }
 
+float MainWindow::getOffset(float freq)
+{
+    float testvariable = 0;
+    /*
+     * x^7  3.618441430295573e-24
+     * x^6  -4.946835169104284e-20
+     * x^5  1.765187136354818e-16
+     * x^4  1.954410451450048e-13
+     * x^3  -1.981708419485009e-09
+     * x^2  3.447607881262498e-06
+     * x^1  -0.006032396479099
+     * x^0  -8.525161305426837
+     * */
+    testvariable = 3.618e-24*freq*freq*freq*freq*freq*freq*freq;
+    testvariable -= 4.946e-20*freq*freq*freq*freq*freq*freq;
+    testvariable += 1.765e-16*freq*freq*freq*freq*freq;
+    testvariable += 1.954e-13*freq*freq*freq*freq;
+    testvariable -= 1.981e-09*freq*freq*freq;
+    testvariable += 3.447e-06*freq*freq;
+    testvariable -= 6.032e-3*freq;
+    testvariable -= 8.525;
+    return testvariable;
+}
+
 void MainWindow::mousePress(QMouseEvent* event)
 {
     if (ui->Cursor1->currentIndex() == 1)
@@ -519,6 +543,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     maxPoint = -2000;
     maxFrequency = 0;
     double shift = S/2;
+    double offset = getOffset(CF);
 
 
     if (endIndex <= points[0].size())
@@ -537,7 +562,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
             {
                 for (int j = 0; j < points.size(); j++)
                 {
-                    avgPoint += points[j].at(i);
+                    avgPoint += points[j].at(i) + offset;
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
@@ -575,7 +600,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 {
                     maxFrequency2 = points[0].at(i);
                 }
-                plotPoints.push_back(points[0].at(i));
+                plotPoints.push_back(points[0].at(i) + offset);
             }
 
         }
