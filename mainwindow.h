@@ -46,7 +46,6 @@ private Q_SLOTS:
     void on_CF1_editingFinished();
     void on_AB1_editingFinished();
     void on_Span1_editingFinished();
-    void on_CF2_unitchange(void);
     void on_CF2_currentTextChanged(const QString &arg1);
     void on_Span2_currentTextChanged(const QString &arg1);
     void on_WSize_currentIndexChanged(int index);
@@ -60,7 +59,7 @@ private Q_SLOTS:
     float getOffset(float freq);
     void mousePress(QMouseEvent* event);
     void mouseMove(QMouseEvent* event);
-    void mouseRelease();
+    void mouseRelease(QMouseEvent* event);
 
 
     void on_Cursor1_currentIndexChanged(int index);
