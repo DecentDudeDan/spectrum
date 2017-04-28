@@ -541,10 +541,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
-                        if (xValue.size() >= i)
-                        {
-                            maxFrequency = xValue.at(i);
-                        }
+                        maxFrequency = xValue.at(i - (int)startIndex);
                     }
                 }
                 if (i == v1Index)
@@ -563,10 +560,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 if(singlePoints.at(i) > maxPoint)
                 {
                     maxPoint = singlePoints.at(i);
-                    if (xValue.size() >= i)
-                    {
-                        maxFrequency = xValue.at(i);
-                    }
+                    maxFrequency = xValue.at(i - (int)startIndex);
                 }
                 if (i == v1Index)
                 {
