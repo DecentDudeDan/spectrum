@@ -34,7 +34,7 @@ public:
     void startPlotting();
     void endRunningThread();
     void setupWindowingVectors();
-    void ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, bool firstLine);
+    void ManageCursor(QCustomPlot* plot, double x, QPen pen, bool firstLine);
     int getIndexFromHertz(double hertz);
 
 
@@ -56,11 +56,11 @@ private Q_SLOTS:
     void on_Settings_clicked();
     void on_w3close_clicked();
     void on_Export_clicked();
-    void on_AVG1_currentTextChanged(const QString &arg1);
+    void on_AVG1_currentTextChanged();
     float getOffset(float freq);
     void mousePress(QMouseEvent* event);
     void mouseMove(QMouseEvent* event);
-    void mouseRelease(QMouseEvent* event);
+    void mouseRelease();
 
 
     void on_Cursor1_currentIndexChanged(int index);
@@ -77,7 +77,11 @@ private:
     double maxFrequency1;
     double maxFrequency2;
     double maxPoint;
-    //double cfMhz;
+    double cf2Mem;
+    double c1PowerVal;
+    double c2PowerVal;
+    double horzDelt;
+    double cfMhz;
     double spanMhz;
     bool firstRun;
     bool isLinear;
