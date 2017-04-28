@@ -5,8 +5,7 @@ ConcurrentQueue* points = new ConcurrentQueue();
 
 const double MILLION = 1000000.0;
 const double THOUSAND = 1000.0;
-//really wreckin it with these globals danny
-double cfMhz = 0;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -20,7 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
     maxFrequency1(0),
     maxFrequency2(0),
     maxPoint(-200),
-    //cfMhz(0),
+    cf2Mem(cfMhz),
+    c1PowerVal(0),
+    c2PowerVal(0),
+    horzDelt(0),
+    cfMhz(0),
     spanMhz(0),
     firstRun(true),
     isLinear(false),
@@ -119,29 +122,29 @@ void MainWindow::setupGraph()
 
     //adds the graph
     ui->customPlot1->addGraph();
-   // ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
+    // ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
     //adds the line to the central frequency graph
-   // QVector<double> YA(5000), XA(5000);
+    // QVector<double> YA(5000), XA(5000);
 
-//    for (int i = 0; i < 5000; i++)
-//    {
-//        YA[i] = i - 2500;
-//        XA[i] = ui->CF1->text().toDouble();
-//    }
-//    ui->customPlot1->addGraph();
-//    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-//    ui->customPlot1->graph(1)->setData(XA, YA);
-//    if(ui->CF2->currentText() == "MHz")
-//    {
-//        for (int i = 0; i < 5000; i++)
-//        {
-//            YA[i] = i - 2500;
-//            XA[i] = (ui->CF1->text().toDouble())/1000;
-//        }
-//        ui->customPlot1->addGraph();
-//        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-//        ui->customPlot1->graph(1)->setData(XA, YA);
-//    }
+    //    for (int i = 0; i < 5000; i++)
+    //    {
+    //        YA[i] = i - 2500;
+    //        XA[i] = ui->CF1->text().toDouble();
+    //    }
+    //    ui->customPlot1->addGraph();
+    //    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+    //    ui->customPlot1->graph(1)->setData(XA, YA);
+    //    if(ui->CF2->currentText() == "MHz")
+    //    {
+    //        for (int i = 0; i < 5000; i++)
+    //        {
+    //            YA[i] = i - 2500;
+    //            XA[i] = (ui->CF1->text().toDouble())/1000;
+    //        }
+    //        ui->customPlot1->addGraph();
+    //        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
+    //        ui->customPlot1->graph(1)->setData(XA, YA);
+    //    }
 
     ui->customPlot1->xAxis->setLabel("GHz");
     if (ui->CF2->currentText() == "MHz")
@@ -193,14 +196,11 @@ void MainWindow::setupGraph()
         ui->customPlot1->yAxis->setRange(-0.001,0.15);
     }
 
+    ui->HorzDeltaLabel->setText("MHz");
     setupWindowingVectors();
 }
 
-//Setting Globals here... Sorry Danny.
-double c1powerval = 0;
-double c2powerval = 0;
-double horzdelt = 0;
-void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, bool firstLine)
+void MainWindow::ManageCursor(QCustomPlot* plot, double x, QPen pen, bool firstLine)
 {
 
     if(firstLine)
@@ -216,7 +216,7 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         v1Index = getIndexFromHertz(x);
 
         ui->MP1->setText(QString::number(x));
-        c1powerval = x;
+        c1PowerVal = x;
 
 
     } else
@@ -232,17 +232,17 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         v2Index = getIndexFromHertz(x);
 
         ui->C2MP1->setText(QString::number(x));
-        c2powerval = x;
+        c2PowerVal = x;
 
     }
     if (cfMhz!=1)
     {
-    horzdelt = fabs((c1powerval -c2powerval)*1000);
+        horzDelt = fabs((c1PowerVal -c2PowerVal)*1000);
     }
     else
-        horzdelt = fabs((c1powerval - c2powerval));
+        horzDelt = fabs((c1PowerVal - c2PowerVal));
 
-    ui->HorzDeltaBox->setText(QString::number(horzdelt));
+    ui->HorzDeltaBox->setText(QString::number(horzDelt));
 
 }
 
@@ -259,12 +259,12 @@ float MainWindow::getOffset(float freq)
      * x^1  -0.006032396479099
      * x^0  -8.525161305426837
      * */
-    testvariable = 3.618e-24*freq*freq*freq*freq*freq*freq*freq;
-    testvariable -= 4.946e-20*freq*freq*freq*freq*freq*freq;
-    testvariable += 1.765e-16*freq*freq*freq*freq*freq;
-    testvariable += 1.954e-13*freq*freq*freq*freq;
-    testvariable -= 1.981e-09*freq*freq*freq;
-    testvariable += 3.447e-06*freq*freq;
+    testvariable = 3.618e-24*pow(freq, 7.0);
+    testvariable -= 4.946e-20*pow(freq, 6.0);
+    testvariable += 1.765e-16*pow(freq, 5.0);
+    testvariable += 1.954e-13*pow(freq, 4.0);
+    testvariable -= 1.981e-09*pow(freq, 3.0);
+    testvariable += 3.447e-06*pow(freq, 2.0);
     testvariable -= 6.032e-3*freq;
     testvariable -= 8.525;
     return testvariable;
@@ -279,14 +279,13 @@ void MainWindow::mousePress(QMouseEvent* event)
 
         QCustomPlot* plot = ui->customPlot1;
         double x=plot->xAxis->pixelToCoord(event->pos().x());
-        double y=plot->yAxis->pixelToCoord(event->pos().y());
         if(event->buttons() == Qt::LeftButton)
         {
-            ManageCursor(plot, x,y, QPen(Qt::green), true);
+            ManageCursor(plot, x, QPen(Qt::green), true);
         }
         else
         {
-            ManageCursor(plot, x, y, QPen(Qt::green), false);
+            ManageCursor(plot, x, QPen(Qt::green), false);
         }
         plot->replot();
     }
@@ -300,21 +299,20 @@ void MainWindow::mouseMove(QMouseEvent* event)
         {
             QCustomPlot* plot = ui->customPlot1;
             double x=plot->xAxis->pixelToCoord(event->pos().x());
-            double y=plot->yAxis->pixelToCoord(event->pos().y());
             if(event->buttons() == Qt::LeftButton)
             {
-                ManageCursor(plot, x,y, QPen(Qt::green), true);
+                ManageCursor(plot, x, QPen(Qt::green), true);
             }
             else
             {
-                ManageCursor(plot, x, y, QPen(Qt::green), false);
+                ManageCursor(plot, x, QPen(Qt::green), false);
             }
             plot->replot();
         }
     }
 }
 
-void MainWindow::mouseRelease(QMouseEvent *event)
+void MainWindow::mouseRelease(QMouseEvent* event)
 {
     mouseHeld = false;
 }
@@ -415,6 +413,7 @@ void MainWindow::startStuff()
     if (newThread->isRunning())
     {
         stopStuff();
+        QThread::sleep(1);
         qDebug() << "is finished: " << newThread->isFinished();
         if (newThread->isFinished()) {
             refreshPlotting();
@@ -504,7 +503,7 @@ void MainWindow::realtimeDataSlot()
         }
 
         // rescale value (vertical) axis to fit the current data:
-        ui->customPlot1->graph(0)->rescaleValueAxis(true);
+        ui->customPlot1->graph(0)->rescaleValueAxis(true, true);
 
         ui->customPlot1->replot();
         lastPointKey = key;
@@ -568,11 +567,11 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                         maxPoint = points[j].at(i);
                         maxFrequency = xValue.at(i);
                         //ui->Peak_Pwr->setText(QString::number(maxPoint));
-//                        if(i >=0 && i <= points[j].size())
-//                        {
-//                            //maxFrequency = xValue.at(i);
-//                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
-//                        }
+                        //                        if(i >=0 && i <= points[j].size())
+                        //                        {
+                        //                            //maxFrequency = xValue.at(i);
+                        //                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
+                        //                        }
                     }
                 }
                 if (i == v1Index)
@@ -661,29 +660,29 @@ QVector<double> MainWindow::createDataPoints()
             //Magnitude: Unit Volts (V)
             double V = ((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
             //Volts RMS
-           //double VRMS = V/sqrt(2);
+            //double VRMS = V/sqrt(2);
             //Power Watts
             //double Watts = V*V/2;
             //Output
             //double Ppp = V;
             double dBFS = 10*log10(V);
-//            if (ui->Mode1->currentText()=="V"){
-//                           ffttemp1.push_back(V);
-//                       }
+            //            if (ui->Mode1->currentText()=="V"){
+            //                           ffttemp1.push_back(V);
+            //                       }
 
-//                       else if(ui->Mode1->currentText()=="dBV"){
-//                           ffttemp1.push_back(dBFS);
-//                       }
-//                       else if (ui->Mode1->currentText() == "Vrms"){
-//                       ffttemp1.push_back(VRMS);
-//                       }
-//                       else if (ui->Mode1->currentText() == "Watts"){
+            //                       else if(ui->Mode1->currentText()=="dBV"){
+            //                           ffttemp1.push_back(dBFS);
+            //                       }
+            //                       else if (ui->Mode1->currentText() == "Vrms"){
+            //                       ffttemp1.push_back(VRMS);
+            //                       }
+            //                       else if (ui->Mode1->currentText() == "Watts"){
 
-//                       ffttemp1.push_back(Watts);
-//                       }
-//                     //  else if(ui->Mode1->currentText()=="dBm"){
-//                       //    ffttemp1.push_back(dBFS);
-//                       //}
+            //                       ffttemp1.push_back(Watts);
+            //                       }
+            //                     //  else if(ui->Mode1->currentText()=="dBm"){
+            //                       //    ffttemp1.push_back(dBFS);
+            //                       //}
             isLinear ? ffttemp1.push_back(V) : ffttemp1.push_back(dBFS);
         } else
         {
@@ -691,8 +690,6 @@ QVector<double> MainWindow::createDataPoints()
             double V =((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
             //Volts  RMS
             //double VRMS = V/sqrt(2);
-            //Power Watts
-            double Watts = V*V/2;
             //Output:
             //double Ppp = V;
             double dBFS = 10*log10(V);
@@ -805,31 +802,34 @@ void MainWindow::on_StopButton_clicked()
 void MainWindow::on_CF1_editingFinished()
 {
     double tCF = ui->CF1->text().toDouble();
-    if (cfMhz == 1)
+    if (tCF != CF)
     {
-        if( tCF >= 100 && tCF <= 5970)
+        if (cfMhz == 1)
         {
-            endRunningThread();
-            CF = tCF / THOUSAND;
-            refreshPlotting();
-        }
+            if( tCF >= 100 && tCF <= 5970)
+            {
+                endRunningThread();
+                CF = tCF / THOUSAND;
+                refreshPlotting();
+            }
 
-        else
-        {
-            QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+            else
+            {
+                QMessageBox::about(this, "Incorrect Value", "Enter a value between 100 and 5970");
+            }
         }
-    }
-    if(cfMhz != 1)
-    {
-        if ( tCF >= .1 && tCF <= 5.97)
+        if(cfMhz != 1)
         {
-            endRunningThread();
-            CF = tCF;
-            refreshPlotting();
-        }
-        else
-        {
-            QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+            if ( tCF >= .1 && tCF <= 5.97)
+            {
+                endRunningThread();
+                CF = tCF;
+                refreshPlotting();
+            }
+            else
+            {
+                QMessageBox::about(this, "Incorrect Value", "Enter a number between .1 and 5.97");
+            }
         }
     }
 
@@ -839,7 +839,7 @@ void MainWindow::on_CF1_editingFinished()
 void MainWindow::on_AB1_editingFinished()
 {
     double tAB = ui->AB1->text().toDouble();
-    if (tAB)
+    if (AB != tAB)
     {
         endRunningThread();
         AB = tAB;
@@ -847,6 +847,7 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
+<<<<<<< HEAD
 //Sorry Danny we did it again... Global variable time
 double CF2mem = cfMhz;
 
@@ -863,34 +864,36 @@ void MainWindow::on_CF2_unitchange(void)
 
 }
 
+=======
+>>>>>>> f4f1e3c034952b727c0d73f71c612a3a35ad3940
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
-     ui->HorzDeltaLabel->setText("MHz");
-    if (arg1 == "MHz")
+    if (arg1 != ui->FQ2->text())
     {
-        ui->CF1->setText(QString::number(CF*1000));
-        cfMhz= 1;
-        ui->FQ2->setText("MHz");
-        ui->C2FQ2->setText("MHz");
-        ui->customPlot1->xAxis->setLabel("MHz");
-        ui->PeakFreqLabel->setText("MHz");
+        if (arg1 == "MHz")
+        {
+            ui->CF1->setText(QString::number(CF*1000));
+            cfMhz= 1;
+            ui->FQ2->setText("MHz");
+            ui->C2FQ2->setText("MHz");
+            ui->customPlot1->xAxis->setLabel("MHz");
+            ui->PeakFreqLabel->setText("MHz");
 
 
+        }
+        else
+        {
+            ui->CF1->setText(QString::number(CF));
+            cfMhz = 0;
+            ui->FQ2->setText("GHz");
+            ui->C2FQ2->setText("GHz");
+            ui->customPlot1->xAxis->setLabel("GHz");
+            ui->PeakFreqLabel->setText("GHz");
+
+        }
+        refreshPlotting();
     }
-    else
-    {
-        ui->CF1->setText(QString::number(CF));
-        cfMhz = 0;
-        ui->FQ2->setText("GHz");
-        ui->C2FQ2->setText("GHz");
-        ui->customPlot1->xAxis->setLabel("GHz");
-        ui->PeakFreqLabel->setText("GHz");
-        //ui->HorzDeltaLabel->setText("GHz");
-
-    }
-        on_CF2_unitchange();
-
 
 }
 
@@ -908,9 +911,12 @@ void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_WSize_currentIndexChanged(int index)
 {
-    endRunningThread();
-    windowType = index;
-    refreshPlotting();
+    if (windowType != index)
+    {
+        endRunningThread();
+        windowType = index;
+        refreshPlotting();
+    }
 }
 
 void MainWindow::on_Theme1_currentIndexChanged(const QString &arg1)
@@ -972,11 +978,11 @@ void MainWindow::on_Export_clicked()
     }
 }
 
-void MainWindow::on_AVG1_currentTextChanged(const QString &arg1)
+void MainWindow::on_AVG1_currentTextChanged()
 {
     int tAvg = ui->AVG1->currentText().toInt();
 
-    if(tAvg > 0 && tAvg <= 10)
+    if((tAvg > 0 && tAvg <= 10) && tAvg != numberOfAverages)
     {
         endRunningThread();
         numberOfAverages = tAvg;
@@ -1008,23 +1014,23 @@ void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
     }
 
 
-//    if (arg1 == "V" || arg1 == "Vrms" || arg1 == "Watts" )
-//    {
-//        isLinear = true;
-//        ui->customPlot1->yAxis->setRange(-0.001,0.15);
-//        ui->MP2->setText("V");
+    //    if (arg1 == "V" || arg1 == "Vrms" || arg1 == "Watts" )
+    //    {
+    //        isLinear = true;
+    //        ui->customPlot1->yAxis->setRange(-0.001,0.15);
+    //        ui->MP2->setText("V");
 
-//    }
+    //    }
 
-//    else if (arg1 == "dBV" || arg1 == "dBM")
-//    {
-//        isLinear = false;
-//        ui->customPlot1->yAxis->setRange(-120,0);
-//        ui->MP2->setText("dBV");
-//    }
+    //    else if (arg1 == "dBV" || arg1 == "dBM")
+    //    {
+    //        isLinear = false;
+    //        ui->customPlot1->yAxis->setRange(-120,0);
+    //        ui->MP2->setText("dBV");
+    //    }
 
-//    ui ->MP2->setText(ui->Mode1->currentText());
-//    ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
+    //    ui ->MP2->setText(ui->Mode1->currentText());
+    //    ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
 
 
 }
