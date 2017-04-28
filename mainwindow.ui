@@ -266,31 +266,6 @@
            <string>MHz    </string>
           </property>
          </widget>
-         <widget class="QComboBox" name="Span2">
-          <property name="geometry">
-           <rect>
-            <x>210</x>
-            <y>130</y>
-            <width>51</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>51</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>51</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(149, 149, 149);</string>
-          </property>
-         </widget>
          <widget class="QPushButton" name="w3close">
           <property name="geometry">
            <rect>
@@ -318,6 +293,34 @@
           </property>
           <property name="text">
            <string>x</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>130</y>
+            <width>51</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+          <property name="text">
+           <string>MHz    </string>
           </property>
          </widget>
         </widget>
@@ -1403,7 +1406,7 @@
      <x>0</x>
      <y>0</y>
      <width>1325</width>
-     <height>15</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

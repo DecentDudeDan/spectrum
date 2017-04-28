@@ -89,8 +89,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->CF2->addItem("GHz");
     ui->CF2->addItem("MHz");
 
-    ui->Span2->addItem("MHz");
-    ui->Span2->addItem("kHz");
+
+
 
 
     // ui->Mode1->addItem("Vrms");
@@ -855,41 +855,33 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
     {
         if (arg1 == "MHz")
         {
+            endRunningThread();
             ui->CF1->setText(QString::number(CF*1000));
             cfMhz= 1;
             ui->FQ2->setText("MHz");
             ui->C2FQ2->setText("MHz");
             ui->customPlot1->xAxis->setLabel("MHz");
             ui->PeakFreqLabel->setText("MHz");
-
+            refreshPlotting();
 
         }
         else
         {
+            endRunningThread();
             ui->CF1->setText(QString::number(CF));
             cfMhz = 0;
             ui->FQ2->setText("GHz");
             ui->C2FQ2->setText("GHz");
             ui->customPlot1->xAxis->setLabel("GHz");
             ui->PeakFreqLabel->setText("GHz");
-
+            refreshPlotting();
         }
-        refreshPlotting();
+
     }
 
 }
 
-void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
-{
-    if (arg1 == "kHz")
-    {
-        spanMhz= 1;
-    }
-    else
-    {
-        spanMhz = 0;
-    }
-}
+
 
 void MainWindow::on_WSize_currentIndexChanged(int index)
 {
