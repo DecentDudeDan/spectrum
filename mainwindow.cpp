@@ -89,16 +89,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->CF2->addItem("GHz");
     ui->CF2->addItem("MHz");
 
-
-
-
-
-    // ui->Mode1->addItem("Vrms");
-    ui->Mode1->addItem("Logarithmic");
-    ui->Mode1->addItem("Linear");
-    //ui->Mode1->addItem("Watts");
-    //ui->Mode1->addItem("dBm");
-
     ui->Grid1->addItem("On");
     ui->Grid1->addItem("Off");
 

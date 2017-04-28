@@ -355,19 +355,6 @@
            <string>Plot Settings</string>
           </property>
          </widget>
-         <widget class="QLabel" name="Mode">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>120</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Mode</string>
-          </property>
-         </widget>
          <widget class="QLabel" name="Theme">
           <property name="geometry">
            <rect>
@@ -392,31 +379,6 @@
           </property>
           <property name="text">
            <string>Grid</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="Mode1">
-          <property name="geometry">
-           <rect>
-            <x>140</x>
-            <y>50</y>
-            <width>120</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
          <widget class="QComboBox" name="Theme1">
