@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tempNumPoints(8192),
     numberOfAverages(1),
     maxFrequency(0),
-    maxFrequency1(0),
-    maxFrequency2(0),
+    maxPower1(0),
+    maxPower2(0),
     maxPoint(-200),
     cf2Mem(cfMhz),
     c1PowerVal(0),
@@ -112,42 +112,10 @@ void MainWindow::setupGraph()
 
     //adds the graph
     ui->customPlot1->addGraph();
-    // ui->customPlot1->graph(0)->setLineStyle((QCPGraph::LineStyle)2);
-    //adds the line to the central frequency graph
-    // QVector<double> YA(5000), XA(5000);
-
-    //    for (int i = 0; i < 5000; i++)
-    //    {
-    //        YA[i] = i - 2500;
-    //        XA[i] = ui->CF1->text().toDouble();
-    //    }
-    //    ui->customPlot1->addGraph();
-    //    ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-    //    ui->customPlot1->graph(1)->setData(XA, YA);
-    //    if(ui->CF2->currentText() == "MHz")
-    //    {
-    //        for (int i = 0; i < 5000; i++)
-    //        {
-    //            YA[i] = i - 2500;
-    //            XA[i] = (ui->CF1->text().toDouble())/1000;
-    //        }
-    //        ui->customPlot1->addGraph();
-    //        ui->customPlot1->graph(1)->setPen(QPen(Qt::white));
-    //        ui->customPlot1->graph(1)->setData(XA, YA);
-    //    }
 
     ui->customPlot1->xAxis->setLabel("GHz");
     if (ui->CF2->currentText() == "MHz")
         ui->customPlot1->xAxis->setLabel("MHz");
-    //if (ui->Mode1->currentText()=="V")
-    //switch(ui->Mode1->currentText()){
-    //    case V:      ui->customPlot1->yAxis->setLabel("V");
-    //    case Vrms:   ui->customPlot1->yAxis->setLabel("Vrms");
-    //    case dBV:    ui->customPlot1->yAxis->setLabel("dBV");
-    //    case Watts:  ui->customPlot1->yAxis->setLabel("Watts");
-    //    case dBm:    ui->customPlot1->yAxis->setLabel("dBm");
-    //}
-
 
     //Makes sure the current theme set does not change
     if (ui->Theme1->currentText() == "Dark")
@@ -533,9 +501,9 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
     double xinc = 0;
     maxPoint = -2000;
     maxFrequency = 0;
+    maxPower1 = 0;
+    maxPower2 = 0;
     double shift = S/2;
-    double offset = getOffset(CF);
-
 
     if (endIndex <= points[0].size())
     {
@@ -553,7 +521,7 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
             {
                 for (int j = 0; j < points.size(); j++)
                 {
-                    avgPoint += points[j].at(i);// + offset;
+                    avgPoint += points[j].at(i);
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
@@ -561,21 +529,15 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                         {
                             maxFrequency = xValue.at(i);
                         }
-                        //ui->Peak_Pwr->setText(QString::number(maxPoint));
-                        //                        if(i >=0 && i <= points[j].size())
-                        //                        {
-                        //                            //maxFrequency = xValue.at(i);
-                        //                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
-                        //                        }
                     }
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency1 = xValue.at(i);
+                    maxPower1 = points[0].at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxFrequency2 = points[0].at(i);
+                    maxPower2 = points[0].at(i);
                 }
                 avgPoint = avgPoint/points.size();
                 plotPoints.push_back(avgPoint);
@@ -592,21 +554,21 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency1 = singlePoints.at(i);
+                    maxPower1 = singlePoints.at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxFrequency2 = singlePoints.at(i);
+                    maxPower2 = singlePoints.at(i);
                 }
-                plotPoints.push_back(singlePoints.at(i));// + offset);
+                plotPoints.push_back(singlePoints.at(i));
             }
 
         }
         ui->Peak_Pwr->setText(QString::number(maxPoint));
         ui->Peak_Freq->setText(QString::number(maxFrequency));
-        ui->FQ1->setText(QString::number(maxFrequency1));
-        ui->C2FQ1->setText(QString::number(maxFrequency2));
-        double vertdelt = maxFrequency1 - maxFrequency2;
+        ui->FQ1->setText(QString::number(maxPower1));
+        ui->C2FQ1->setText(QString::number(maxPower2));
+        double vertdelt = maxPower1 - maxPower2;
         ui->VertDeltBox->setText(QString::number(vertdelt));
     }
 
@@ -651,80 +613,21 @@ QVector<double> MainWindow::createDataPoints()
     }
 
     fftw_execute(p);
-
+    double V;
+    double dBFS;
     for (i = 0; i < dPoints; i++)
     {
+        V = ((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
+        dBFS = 10*log10(V);
+
         if (i < dPoints/2)
         {
-            //Magnitude: Unit Volts (V)
-            double V = ((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
-            //Volts RMS
-            //double VRMS = V/sqrt(2);
-            //Power Watts
-            //double Watts = V*V/2;
-            //Output
-            //double Ppp = V;
-            double dBFS = 10*log10(V);
-            //            if (ui->Mode1->currentText()=="V"){
-            //                           ffttemp1.push_back(V);
-            //                       }
-
-            //                       else if(ui->Mode1->currentText()=="dBV"){
-            //                           ffttemp1.push_back(dBFS);
-            //                       }
-            //                       else if (ui->Mode1->currentText() == "Vrms"){
-            //                       ffttemp1.push_back(VRMS);
-            //                       }
-            //                       else if (ui->Mode1->currentText() == "Watts"){
-
-            //                       ffttemp1.push_back(Watts);
-            //                       }
-            //                     //  else if(ui->Mode1->currentText()=="dBm"){
-            //                       //    ffttemp1.push_back(dBFS);
-            //                       //}
-            isLinear ? ffttemp1.push_back(V) : ffttemp1.push_back(dBFS);
+            ffttemp1.push_back(dBFS);
         } else
         {
-            //Magnitude: Unit Volts (V)
-            double V =((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
-            //Volts  RMS
-            //double VRMS = V/sqrt(2);
-            //Output:
-            //double Ppp = V;
-            double dBFS = 10*log10(V);
-            //            if (ui->Mode1->currentText()=="V"){
-            //                           ffttemp1.push_back(V);
-            //                       }
-
-            //                       else if(ui->Mode1->currentText()=="dBV"){
-            //                           ffttemp1.push_back(dBFS);
-            //                       }
-            //                       else if (ui->Mode1->currentText() == "Vrms"){
-            //                       ffttemp1.push_back(VRMS);
-            //                       }
-            //                       else if (ui->Mode1->currentText() == "Watts"){
-
-            //                       ffttemp1.push_back(Watts);
-            //                       }
-            //                     //  else if(ui->Mode1->currentText()=="dBm"){
-            //                       //    ffttemp1.push_back(dBFS);
-            //                       //}
-            isLinear ? fftPoints.push_back(V) : fftPoints.push_back(dBFS);
+            fftPoints.push_back(dBFS);
         }
     }
-
-    //        for (i = 0; i < dPoints; i++)
-    //        {
-    //            if (i < dPoints/2)
-    //            {
-    //                double Ppp = sqrt((out[i][0]*out[i][0] + out[i][1]*out[i][1]));
-    //                ffttemp1.push_back(Ppp);
-    //            } else
-    //            {
-    //                double Ppp = sqrt((out[i][0]*out[i][0] + out[i][1]*out[i][1]));
-    //                fftPoints.push_back(Ppp);
-    //            }
-    //        }
 
     fftPoints.append(ffttemp1);
 
@@ -736,11 +639,30 @@ QVector<double> MainWindow::createDataPoints()
 
 int MainWindow::getIndexFromHertz(double hertz)
 {
-    double dPoints = numPoints;
-    double temp = ((.06-S)/2);
 
-    double v1 = hertz - CF + (S/2) + temp;
-    double v2 = dPoints/.06;
+    double dPoints;
+    double temp;
+    double v1;
+    double v2;
+    double tS;
+    double tCF;
+
+    if (cfMhz == 0)
+    {
+        dPoints = numPoints;
+        temp = ((.06-S)/2);
+
+        v1 = hertz - CF + (S/2) + temp;
+        v2 = dPoints/.06;
+    } else {
+        tS = S * THOUSAND;
+        tCF = CF * THOUSAND;
+        dPoints = numPoints;
+        temp = ((60-tS)/2);
+
+        v1 = hertz - tCF + (tS/2) + temp;
+        v2 = dPoints/60;
+    }
 
     return v1*v2;
 }

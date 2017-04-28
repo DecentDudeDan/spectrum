@@ -72,8 +72,8 @@ private:
     int tempNumPoints;
     int numberOfAverages;
     double maxFrequency;
-    double maxFrequency1;
-    double maxFrequency2;
+    double maxPower1;
+    double maxPower2;
     double maxPoint;
     double cf2Mem;
     double c1PowerVal;
