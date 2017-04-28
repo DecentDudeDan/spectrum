@@ -266,31 +266,6 @@
            <string>MHz    </string>
           </property>
          </widget>
-         <widget class="QComboBox" name="Span2">
-          <property name="geometry">
-           <rect>
-            <x>210</x>
-            <y>130</y>
-            <width>51</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>51</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>51</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(149, 149, 149);</string>
-          </property>
-         </widget>
          <widget class="QPushButton" name="w3close">
           <property name="geometry">
            <rect>
@@ -318,6 +293,34 @@
           </property>
           <property name="text">
            <string>x</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>130</y>
+            <width>51</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+          <property name="text">
+           <string>MHz    </string>
           </property>
          </widget>
         </widget>
@@ -352,19 +355,6 @@
            <string>Plot Settings</string>
           </property>
          </widget>
-         <widget class="QLabel" name="Mode">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>50</y>
-            <width>120</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Mode</string>
-          </property>
-         </widget>
          <widget class="QLabel" name="Theme">
           <property name="geometry">
            <rect>
@@ -389,31 +379,6 @@
           </property>
           <property name="text">
            <string>Grid</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="Mode1">
-          <property name="geometry">
-           <rect>
-            <x>140</x>
-            <y>50</y>
-            <width>120</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
          <widget class="QComboBox" name="Theme1">
@@ -1403,7 +1368,7 @@
      <x>0</x>
      <y>0</y>
      <width>1325</width>
-     <height>15</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
