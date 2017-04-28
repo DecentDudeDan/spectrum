@@ -208,6 +208,7 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, QPen pen, bool firstL
 
 float MainWindow::getOffset(float freq)
 {
+    freq = freq*1000;
     float testvariable = 0;
     /*
      * x^7  3.618441430295573e-24
@@ -219,14 +220,14 @@ float MainWindow::getOffset(float freq)
      * x^1  -0.006032396479099
      * x^0  -8.525161305426837
      * */
-    testvariable = 3.618e-24*pow(freq, 7.0);
-    testvariable -= 4.946e-20*pow(freq, 6.0);
-    testvariable += 1.765e-16*pow(freq, 5.0);
-    testvariable += 1.954e-13*pow(freq, 4.0);
-    testvariable -= 1.981e-09*pow(freq, 3.0);
-    testvariable += 3.447e-06*pow(freq, 2.0);
-    testvariable -= 6.032e-3*freq;
-    testvariable -= 8.525;
+    testvariable = 3.618441430295573e-24*pow(freq, 7.0);
+    testvariable -= 4.946835169104284e-20*pow(freq, 6.0);
+    testvariable += 1.765187136354818e-16*pow(freq, 5.0);
+    testvariable += 1.954410451450048e-13*pow(freq, 4.0);
+    testvariable -= 1.981708419485009e-09*pow(freq, 3.0);
+    testvariable += 3.447607881262498e-06*pow(freq, 2.0);
+    testvariable -= 6.032396479099e-3*freq;
+    testvariable -= 8.525161305426837;
     return testvariable;
 }
 
@@ -314,26 +315,45 @@ void MainWindow::setupWindowingVectors()
     switch(windowType)
     {
     case 1:
+        double blackman_win;
+        double blackman_win_gain;
+
+
         for(int i = 0; i < numPoints; i++)
         {
             //with Compensation
-            windowMult.push_back(2.3255814*(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1)))));
             double RBW = 60000000*1.69/numPoints;
             ui->RBW1->setText(QString::number(RBW));
             //Without Compensation
-            //windowMult.push_back(0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1))));
+            blackman_win = 0.42659-0.49656*(cos((2*PI*i)/(numPoints-1)))+0.076849*(cos((4*PI*i)/(numPoints-1)));
+            blackman_win_gain += blackman_win/numPoints;
+            windowMult.push_back(blackman_win);
+
+
+        }
+        for (int i = 0; i < numPoints; i++)
+        {
+            windowMult.replace(i, windowMult.at(i)/blackman_win_gain);
         }
         break;
     case 2:
+        double flattop_win;
+        double flattop_win_gain;
+
         for(int i = 0; i < numPoints; i++)
         {
             //With Compensation
-            windowMult.push_back(1-1.93*(cos((2*PI*i)/(numPoints-1)))+1.29*(cos((4*PI*i)/(numPoints-1)))-0.388*(cos((6*PI*i)/(numPoints-1)))+0.028*(cos((8*PI*i)/(numPoints-1))));
-
+            flattop_win=.21557895-.41663158*(cos((2*PI*i)/(numPoints-1)))+.277263158*(cos((4*PI*i)/(numPoints-1)))-.083578947*(cos((6*PI*i)/(numPoints-1)))+.006947368*(cos((8*PI*i)/(numPoints-1)));
+            windowMult.push_back(flattop_win);
+            flattop_win_gain += flattop_win/numPoints;
             double RBW = 60000000*3.77/numPoints;
             ui->RBW1->setText(QString::number(RBW));
-            //Without Compensation: Not sure why we dont need to add compensation for this. It should be 4.54545455
         }
+        for (int i = 0; i < numPoints; i++)
+        {
+            windowMult.replace(i, windowMult.at(i)/flattop_win_gain);
+        }
+        break;
         break;
     case 3:
         for(int i = 0; i < numPoints; i++)
@@ -342,8 +362,6 @@ void MainWindow::setupWindowingVectors()
             windowMult.push_back(2*0.5*(1-cos((2*PI*i)/(numPoints-1))));
             double RBW = 60000000*1.5/numPoints;
             ui->RBW1->setText(QString::number(RBW));
-            //Without Compensation
-            //windowMult.push_back(0.5*(1-cos((2*PI*i)/(numPoints-1))));
         }
         break;
     case 4:
@@ -353,8 +371,6 @@ void MainWindow::setupWindowingVectors()
             windowMult.push_back(1.85185185*(0.54-0.46*(cos((2*PI*i)/(numPoints-1)))));
             double RBW = 60000000*1.36/numPoints;
             ui->RBW1->setText(QString::number(RBW));
-            //Without Compensation
-            //windowMult.push_back(0.54-0.46*(cos((2*PI*i)/(numPoints-1))));
         }
         break;
     }
