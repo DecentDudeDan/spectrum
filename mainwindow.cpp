@@ -561,11 +561,14 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
             {
                 for (int j = 0; j < points.size(); j++)
                 {
-                    avgPoint += points[j].at(i) + offset;
+                    avgPoint += points[j].at(i);// + offset;
                     if(points[j].at(i) > maxPoint)
                     {
                         maxPoint = points[j].at(i);
-                        maxFrequency = xValue.at(i);
+                        if (xValue.size() >= i)
+                        {
+                            maxFrequency = xValue.at(i);
+                        }
                         //ui->Peak_Pwr->setText(QString::number(maxPoint));
                         //                        if(i >=0 && i <= points[j].size())
                         //                        {
@@ -586,20 +589,24 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 plotPoints.push_back(avgPoint);
             } else
             {
-                if(points[0].at(i) > maxPoint)
+                QVector<double> singlePoints = points[0];
+                if(singlePoints.at(i) > maxPoint)
                 {
-                    maxPoint = points[0].at(i);
-                    maxFrequency = xValue.at(i);
+                    maxPoint = singlePoints.at(i);
+                    if (xValue.size() >= i)
+                    {
+                        maxFrequency = xValue.at(i);
+                    }
                 }
                 if (i == v1Index)
                 {
-                    maxFrequency1 = points[0].at(i);
+                    maxFrequency1 = singlePoints.at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxFrequency2 = points[0].at(i);
+                    maxFrequency2 = singlePoints.at(i);
                 }
-                plotPoints.push_back(points[0].at(i) + offset);
+                plotPoints.push_back(singlePoints.at(i));// + offset);
             }
 
         }
@@ -802,6 +809,7 @@ void MainWindow::on_StopButton_clicked()
 void MainWindow::on_CF1_editingFinished()
 {
     double tCF = ui->CF1->text().toDouble();
+    std::cout << tCF;
     if (tCF != CF)
     {
         if (cfMhz == 1)
