@@ -187,6 +187,8 @@ void MainWindow::setupGraph()
     }
 
     ui->HorzDeltaLabel->setText("MHz");
+    cursor->setVLine1(new QCPItemLine(ui->customPlot1));
+    cursor->setVLine2(new QCPItemLine(ui->customPlot1));
     setupWindowingVectors();
 }
 
@@ -1029,9 +1031,14 @@ void MainWindow::on_Cursor1_currentIndexChanged(int index)
     if (index == 0)
     {
         ui->customPlot1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    } else
+        cursor->getVLine1()->setVisible(false);
+        cursor->getVLine2()->setVisible(false);
+    }
+    else
     {
         ui->customPlot1->setInteractions(NULL);
+        cursor->getVLine1()->setVisible(true);
+        cursor->getVLine2()->setVisible(true);
     }
 
 }
