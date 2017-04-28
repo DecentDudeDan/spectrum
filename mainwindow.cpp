@@ -35,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     newThread = new libThread(numPoints, AB, CF);
-
+    cursor->setVLine1(new QCPItemLine(ui->customPlot1));
+    cursor->setVLine2(new QCPItemLine(ui->customPlot1));
     setupGraph();
     setGUIValues();
     ui->widget->show();
@@ -155,8 +156,7 @@ void MainWindow::setupGraph()
     }
 
     ui->HorzDeltaLabel->setText("MHz");
-    cursor->setVLine1(new QCPItemLine(ui->customPlot1));
-    cursor->setVLine2(new QCPItemLine(ui->customPlot1));
+
     setupWindowingVectors();
 }
 
