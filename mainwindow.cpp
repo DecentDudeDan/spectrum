@@ -856,7 +856,9 @@ void MainWindow::on_CF2_unitchange(void)
       {
         stopStuff();
         startStuff();
+        endRunningThread();
         CF2mem=cfMhz;
+        refreshPlotting();
         }
 
 }
