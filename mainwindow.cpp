@@ -5,8 +5,7 @@ ConcurrentQueue* points = new ConcurrentQueue();
 
 const double MILLION = 1000000.0;
 const double THOUSAND = 1000.0;
-//really wreckin it with these globals danny
-double cfMhz = 0;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -20,7 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
     maxFrequency1(0),
     maxFrequency2(0),
     maxPoint(-200),
-    //cfMhz(0),
+    cf2Mem(cfMhz),
+    c1PowerVal(0),
+    c2PowerVal(0),
+    horzDelt(0),
+    cfMhz(0),
     spanMhz(0),
     firstRun(true),
     isLinear(false),
@@ -196,11 +199,7 @@ void MainWindow::setupGraph()
     setupWindowingVectors();
 }
 
-//Setting Globals here... Sorry Danny.
-double c1powerval = 0;
-double c2powerval = 0;
-double horzdelt = 0;
-void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, bool firstLine)
+void MainWindow::ManageCursor(QCustomPlot* plot, double x, QPen pen, bool firstLine)
 {
 
     if(firstLine)
@@ -216,7 +215,7 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         v1Index = getIndexFromHertz(x);
 
         ui->MP1->setText(QString::number(x));
-        c1powerval = x;
+        c1PowerVal = x;
 
 
     } else
@@ -232,17 +231,17 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         v2Index = getIndexFromHertz(x);
 
         ui->C2MP1->setText(QString::number(x));
-        c2powerval = x;
+        c2PowerVal = x;
 
     }
     if (cfMhz!=1)
     {
-    horzdelt = fabs((c1powerval -c2powerval)*1000);
+    horzDelt = fabs((c1PowerVal -c2PowerVal)*1000);
     }
     else
-        horzdelt = fabs((c1powerval - c2powerval));
+        horzDelt = fabs((c1PowerVal - c2PowerVal));
 
-    ui->HorzDeltaBox->setText(QString::number(horzdelt));
+    ui->HorzDeltaBox->setText(QString::number(horzDelt));
 
 }
 
@@ -259,12 +258,12 @@ float MainWindow::getOffset(float freq)
      * x^1  -0.006032396479099
      * x^0  -8.525161305426837
      * */
-    testvariable = 3.618e-24*freq*freq*freq*freq*freq*freq*freq;
-    testvariable -= 4.946e-20*freq*freq*freq*freq*freq*freq;
-    testvariable += 1.765e-16*freq*freq*freq*freq*freq;
-    testvariable += 1.954e-13*freq*freq*freq*freq;
-    testvariable -= 1.981e-09*freq*freq*freq;
-    testvariable += 3.447e-06*freq*freq;
+    testvariable = 3.618e-24*pow(freq, 7.0);
+    testvariable -= 4.946e-20*pow(freq, 6.0);
+    testvariable += 1.765e-16*pow(freq, 5.0);
+    testvariable += 1.954e-13*pow(freq, 4.0);
+    testvariable -= 1.981e-09*pow(freq, 3.0);
+    testvariable += 3.447e-06*pow(freq, 2.0);
     testvariable -= 6.032e-3*freq;
     testvariable -= 8.525;
     return testvariable;
@@ -279,14 +278,13 @@ void MainWindow::mousePress(QMouseEvent* event)
 
         QCustomPlot* plot = ui->customPlot1;
         double x=plot->xAxis->pixelToCoord(event->pos().x());
-        double y=plot->yAxis->pixelToCoord(event->pos().y());
         if(event->buttons() == Qt::LeftButton)
         {
-            ManageCursor(plot, x,y, QPen(Qt::green), true);
+            ManageCursor(plot, x, QPen(Qt::green), true);
         }
         else
         {
-            ManageCursor(plot, x, y, QPen(Qt::green), false);
+            ManageCursor(plot, x, QPen(Qt::green), false);
         }
         plot->replot();
     }
@@ -300,21 +298,20 @@ void MainWindow::mouseMove(QMouseEvent* event)
         {
             QCustomPlot* plot = ui->customPlot1;
             double x=plot->xAxis->pixelToCoord(event->pos().x());
-            double y=plot->yAxis->pixelToCoord(event->pos().y());
             if(event->buttons() == Qt::LeftButton)
             {
-                ManageCursor(plot, x,y, QPen(Qt::green), true);
+                ManageCursor(plot, x, QPen(Qt::green), true);
             }
             else
             {
-                ManageCursor(plot, x, y, QPen(Qt::green), false);
+                ManageCursor(plot, x, QPen(Qt::green), false);
             }
             plot->replot();
         }
     }
 }
 
-void MainWindow::mouseRelease(QMouseEvent *event)
+void MainWindow::mouseRelease()
 {
     mouseHeld = false;
 }
@@ -691,8 +688,6 @@ QVector<double> MainWindow::createDataPoints()
             double V =((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
             //Volts  RMS
             //double VRMS = V/sqrt(2);
-            //Power Watts
-            double Watts = V*V/2;
             //Output:
             //double Ppp = V;
             double dBFS = 10*log10(V);
@@ -847,16 +842,13 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
-//Sorry Danny we did it again... Global variable time
-double CF2mem = cfMhz;
-
 void MainWindow::on_CF2_unitchange(void)
 {
-    if (CF2mem != cfMhz)
+    if (cf2Mem != cfMhz)
       {
         stopStuff();
         startStuff();
-        CF2mem=cfMhz;
+        cf2Mem=cfMhz;
         }
 
 }
@@ -970,7 +962,7 @@ void MainWindow::on_Export_clicked()
     }
 }
 
-void MainWindow::on_AVG1_currentTextChanged(const QString &arg1)
+void MainWindow::on_AVG1_currentTextChanged()
 {
     int tAvg = ui->AVG1->currentText().toInt();
 
