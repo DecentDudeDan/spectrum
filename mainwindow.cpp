@@ -847,6 +847,25 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
+<<<<<<< HEAD
+//Sorry Danny we did it again... Global variable time
+double CF2mem = cfMhz;
+
+void MainWindow::on_CF2_unitchange(void)
+{
+    if (CF2mem != cfMhz)
+      {
+        stopStuff();
+        startStuff();
+        endRunningThread();
+        CF2mem=cfMhz;
+        refreshPlotting();
+        }
+
+}
+
+=======
+>>>>>>> f4f1e3c034952b727c0d73f71c612a3a35ad3940
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
 {
