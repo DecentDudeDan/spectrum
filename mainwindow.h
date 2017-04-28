@@ -46,6 +46,7 @@ private Q_SLOTS:
     void on_CF1_editingFinished();
     void on_AB1_editingFinished();
     void on_Span1_editingFinished();
+    void on_CF2_unitchange(void);
     void on_CF2_currentTextChanged(const QString &arg1);
     void on_Span2_currentTextChanged(const QString &arg1);
     void on_WSize_currentIndexChanged(int index);
@@ -72,10 +73,10 @@ private:
     int tempNumPoints;
     int numberOfAverages;
     double maxFrequency;
-    double maxPower1;
-    double maxPower2;
+    double maxFrequency1;
+    double maxFrequency2;
     double maxPoint;
-    double cfMhz;
+    //double cfMhz;
     double spanMhz;
     bool firstRun;
     bool isLinear;

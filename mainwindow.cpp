@@ -5,7 +5,8 @@ ConcurrentQueue* points = new ConcurrentQueue();
 
 const double MILLION = 1000000.0;
 const double THOUSAND = 1000.0;
-
+//really wreckin it with these globals danny
+double cfMhz = 0;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -16,10 +17,10 @@ MainWindow::MainWindow(QWidget *parent) :
     tempNumPoints(8192),
     numberOfAverages(1),
     maxFrequency(0),
-    maxPower1(0),
-    maxPower2(0),
+    maxFrequency1(0),
+    maxFrequency2(0),
     maxPoint(-200),
-    cfMhz(0),
+    //cfMhz(0),
     spanMhz(0),
     firstRun(true),
     isLinear(false),
@@ -234,7 +235,13 @@ void MainWindow::ManageCursor(QCustomPlot* plot, double x, double y, QPen pen, b
         c2powerval = x;
 
     }
+    if (cfMhz!=1)
+    {
     horzdelt = fabs((c1powerval -c2powerval)*1000);
+    }
+    else
+        horzdelt = fabs((c1powerval - c2powerval));
+
     ui->HorzDeltaBox->setText(QString::number(horzdelt));
 
 }
@@ -304,9 +311,14 @@ void MainWindow::setGUIValues()
 
 void MainWindow::setXAxis()
 {
+
     double start = CF - S/2;
     double end = CF + S/2;
-
+    if (cfMhz==1)
+    {
+        start=CF*1000-S*500;
+        end = CF*1000+S*500;
+    }
     ui->customPlot1->xAxis->setRange(start, end);
 }
 
@@ -515,6 +527,10 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
         {
             xinc = i - startIndex;
             xHertz = ((CF-shift) + (xinc * (.06/dPoints)));
+            if (cfMhz==1)
+            {
+                xHertz*=1000;
+            }
             xValue.push_back(xHertz);
             double avgPoint = 0;
             if (points.size() > 1)
@@ -524,23 +540,23 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                     avgPoint += points[j].at(i);
                     if(points[j].at(i) > maxPoint)
                     {
-                        maxFrequency = xValue.at(i);
                         maxPoint = points[j].at(i);
+                        maxFrequency = xValue.at(i);
                         //ui->Peak_Pwr->setText(QString::number(maxPoint));
 //                        if(i >=0 && i <= points[j].size())
 //                        {
-//                           maxFrequency = xValue.at(i);
+//                            //maxFrequency = xValue.at(i);
 //                            //ui->Peak_Freq->setText(QString::number(maxFrequency));
 //                        }
                     }
                 }
                 if (i == v1Index)
                 {
-                    maxPower1 = xValue.at(i);
+                    maxFrequency1 = xValue.at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxPower2 = points[0].at(i);
+                    maxFrequency2 = points[0].at(i);
                 }
                 avgPoint = avgPoint/points.size();
                 plotPoints.push_back(avgPoint);
@@ -549,15 +565,15 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
                 if(points[0].at(i) > maxPoint)
                 {
                     maxPoint = points[0].at(i);
-                    //maxFrequency = xValue.at(i);
+                    maxFrequency = xValue.at(i);
                 }
                 if (i == v1Index)
                 {
-                    maxPower1 = points[0].at(i);
+                    maxFrequency1 = points[0].at(i);
                 }
                 if (i == v2Index)
                 {
-                    maxPower2 = points[0].at(i);
+                    maxFrequency2 = points[0].at(i);
                 }
                 plotPoints.push_back(points[0].at(i));
             }
@@ -565,9 +581,9 @@ void MainWindow::getPlotValues(QVector<QVector<double>> points)
         }
         ui->Peak_Pwr->setText(QString::number(maxPoint));
         ui->Peak_Freq->setText(QString::number(maxFrequency));
-        ui->FQ1->setText(QString::number(maxPower1));
-        ui->C2FQ1->setText(QString::number(maxPower2));
-        double vertdelt = maxPower1 - maxPower2;
+        ui->FQ1->setText(QString::number(maxFrequency1));
+        ui->C2FQ1->setText(QString::number(maxFrequency2));
+        double vertdelt = maxFrequency1 - maxFrequency2;
         ui->VertDeltBox->setText(QString::number(vertdelt));
     }
 
@@ -806,6 +822,19 @@ void MainWindow::on_AB1_editingFinished()
     }
 }
 
+//Sorry Danny we did it again... Global variable time
+double CF2mem = cfMhz;
+
+void MainWindow::on_CF2_unitchange(void)
+{
+    if (CF2mem != cfMhz)
+      {
+        stopStuff();
+        startStuff();
+        CF2mem=cfMhz;
+        }
+
+}
 
 
 void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
@@ -813,22 +842,29 @@ void MainWindow::on_CF2_currentTextChanged(const QString &arg1)
      ui->HorzDeltaLabel->setText("MHz");
     if (arg1 == "MHz")
     {
+        ui->CF1->setText(QString::number(CF*1000));
         cfMhz= 1;
         ui->FQ2->setText("MHz");
         ui->C2FQ2->setText("MHz");
         ui->customPlot1->xAxis->setLabel("MHz");
         ui->PeakFreqLabel->setText("MHz");
 
+
     }
     else
     {
+        ui->CF1->setText(QString::number(CF));
         cfMhz = 0;
         ui->FQ2->setText("GHz");
         ui->C2FQ2->setText("GHz");
         ui->customPlot1->xAxis->setLabel("GHz");
         ui->PeakFreqLabel->setText("GHz");
         //ui->HorzDeltaLabel->setText("GHz");
+
     }
+        on_CF2_unitchange();
+
+
 }
 
 void MainWindow::on_Span2_currentTextChanged(const QString &arg1)
