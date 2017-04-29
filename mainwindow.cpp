@@ -35,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     newThread = new libThread(numPoints, AB, CF);
-
+    cursor->setVLine1(new QCPItemLine(ui->customPlot1));
+    cursor->setVLine2(new QCPItemLine(ui->customPlot1));
     setupGraph();
     setGUIValues();
     ui->widget->show();
@@ -155,8 +156,7 @@ void MainWindow::setupGraph()
     }
 
     ui->HorzDeltaLabel->setText("MHz");
-    cursor->setVLine1(new QCPItemLine(ui->customPlot1));
-    cursor->setVLine2(new QCPItemLine(ui->customPlot1));
+
     setupWindowingVectors();
 }
 
@@ -389,7 +389,6 @@ void MainWindow::startStuff()
     if (newThread->isRunning())
     {
         stopStuff();
-        QThread::sleep(1);
         qDebug() << "is finished: " << newThread->isFinished();
         if (newThread->isFinished()) {
             refreshPlotting();
@@ -402,6 +401,7 @@ void MainWindow::startStuff()
 
 void MainWindow::refreshPlotting()
 {
+    QThread::msleep(50);
     clearPoints();
     updateInfo();
     setupGraph();
@@ -628,7 +628,7 @@ QVector<double> MainWindow::createDataPoints()
     for (i = 0; i < dPoints; i++)
     {
         V = ((out[i][0]*out[i][0] + out[i][1]*out[i][1])/(dPoints*dPoints));
-        dBFS = 10*log10(V);
+        dBFS = 10*log10(V) - getOffset(CF);
 
         if (i < dPoints/2)
         {
