@@ -861,7 +861,6 @@ void MainWindow::on_Export_clicked()
         QString dateString = date.toString();
         QString s = dateString.replace(QRegExp(" "), "_");
 
-        ui->widget->show();
         ui->centralWidget->grab().save("Spectrum"+ s + ".png");
 
         QFile file(QDir::currentPath() + "/data" + s + ".csv");
@@ -894,50 +893,6 @@ void MainWindow::on_AVG1_currentTextChanged()
         numberOfAverages = tAvg;
         refreshPlotting();
     }
-
-}
-
-void MainWindow::on_Mode1_currentIndexChanged(const QString &arg1)
-{
-    if (arg1 == "Linear")
-    {
-        isLinear = true;
-        ui->customPlot1->yAxis->setRange(-0.001,0.15);
-        ui->MP2->setText("V");
-        ui->customPlot1->yAxis->setLabel("Volts");
-        ui->C2MP2->setText("V");
-        ui->PeakPwrLabel->setText("V");
-        ui->VertDeltaLabel->setText("V");
-    } else
-    {
-        isLinear = false;
-        ui->customPlot1->yAxis->setRange(-120,0);
-        ui->MP2->setText("dBm");
-        ui->customPlot1->yAxis->setLabel("dBm");
-        ui->C2MP2->setText("dBm");
-        ui->PeakPwrLabel->setText("dBm");
-        ui->VertDeltaLabel->setText("dBm");
-    }
-
-
-    //    if (arg1 == "V" || arg1 == "Vrms" || arg1 == "Watts" )
-    //    {
-    //        isLinear = true;
-    //        ui->customPlot1->yAxis->setRange(-0.001,0.15);
-    //        ui->MP2->setText("V");
-
-    //    }
-
-    //    else if (arg1 == "dBV" || arg1 == "dBM")
-    //    {
-    //        isLinear = false;
-    //        ui->customPlot1->yAxis->setRange(-120,0);
-    //        ui->MP2->setText("dBV");
-    //    }
-
-    //    ui ->MP2->setText(ui->Mode1->currentText());
-    //    ui->customPlot1->yAxis->setLabel(ui->Mode1->currentText());
-
 
 }
 
