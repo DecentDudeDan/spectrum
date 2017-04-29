@@ -389,7 +389,6 @@ void MainWindow::startStuff()
     if (newThread->isRunning())
     {
         stopStuff();
-        QThread::sleep(1);
         qDebug() << "is finished: " << newThread->isFinished();
         if (newThread->isFinished()) {
             refreshPlotting();
