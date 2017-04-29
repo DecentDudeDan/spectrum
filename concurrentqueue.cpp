@@ -38,3 +38,8 @@ void ConcurrentQueue::unlock()
 {
     mutex.unlock();
 }
+
+void ConcurrentQueue::clear()
+{
+    points.clear();
+}

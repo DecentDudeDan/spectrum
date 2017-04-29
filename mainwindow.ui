@@ -6,16 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1243</width>
-    <height>643</height>
+    <width>1325</width>
+    <height>701</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(141, 141, 141);
-</string>
+   <string notr="true">background-color: rgb(249, 249, 249);</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -25,151 +24,94 @@
     </sizepolicy>
    </property>
    <property name="styleSheet">
-    <string notr="true">background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))
-</string>
+    <string notr="true">background-color: rgb(234, 234, 234);</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QCustomPlot" name="customPlot1" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="1" rowspan="3">
+     <widget class="QWidget" name="widget" native="true">
       <property name="minimumSize">
        <size>
-        <width>1225</width>
-        <height>521</height>
+        <width>291</width>
+        <height>551</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>291</width>
+        <height>16777215</height>
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background: qlineargradient(spread:reflect, x1:0, y1:0, x2:0, y2:0.489, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))</string>
+       <string notr="true">background-color: rgb(165, 165, 165);</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="1" column="1">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QWidget" name="Values" native="true">
+       <item row="0" column="0">
+        <widget class="QWidget" name="widget_3" native="true">
          <property name="minimumSize">
           <size>
-           <width>301</width>
-           <height>330</height>
+           <width>271</width>
+           <height>171</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>301</width>
-           <height>330</height>
+           <width>271</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(126, 126, 126);</string>
+          <string notr="true">background-color: rgb(111, 111, 111);</string>
          </property>
-         <widget class="QLabel" name="FFT">
+         <widget class="QLabel" name="RecSet">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>40</y>
-            <width>121</width>
-            <height>21</height>
+            <x>10</x>
+            <y>10</y>
+            <width>221</width>
+            <height>31</height>
            </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
           </property>
           <property name="text">
-           <string>FFT</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="FFT1">
-          <property name="geometry">
-           <rect>
-            <x>160</x>
-            <y>40</y>
-            <width>121</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(149, 149, 149);</string>
+           <string>Receiver Settings</string>
           </property>
          </widget>
          <widget class="QLabel" name="CF">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>80</y>
-            <width>121</width>
-            <height>21</height>
+            <x>10</x>
+            <y>50</y>
+            <width>120</width>
+            <height>20</height>
            </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>500</width>
-            <height>500</height>
+            <width>121</width>
+            <height>21</height>
            </size>
           </property>
           <property name="text">
-           <string>Central Frequency</string>
+           <string>Center Frequency</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="CF1">
           <property name="geometry">
            <rect>
-            <x>160</x>
-            <y>80</y>
-            <width>121</width>
+            <x>140</x>
+            <y>50</y>
+            <width>71</width>
             <height>22</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>121</width>
+            <width>71</width>
             <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>121</width>
+            <width>71</width>
             <height>22</height>
            </size>
           </property>
@@ -180,96 +122,478 @@
          <widget class="QLabel" name="AB">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>120</y>
-            <width>121</width>
-            <height>21</height>
+            <x>10</x>
+            <y>90</y>
+            <width>120</width>
+            <height>20</height>
            </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>500</width>
-            <height>500</height>
+            <width>9999</width>
+            <height>9999</height>
            </size>
           </property>
           <property name="text">
-           <string>Sample Rate</string>
+           <string>RF Bandwidth</string>
           </property>
          </widget>
          <widget class="QLineEdit" name="AB1">
           <property name="geometry">
            <rect>
-            <x>160</x>
-            <y>120</y>
-            <width>121</width>
+            <x>140</x>
+            <y>90</y>
+            <width>71</width>
             <height>22</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>121</width>
+            <width>71</width>
             <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>500</width>
-            <height>500</height>
+            <width>71</width>
+            <height>22</height>
            </size>
           </property>
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 255, 255);</string>
           </property>
          </widget>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="Span">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>160</y>
-            <width>121</width>
-            <height>21</height>
+            <x>10</x>
+            <y>130</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>9999</width>
+            <height>9999</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Span</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="Span1">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>130</y>
+            <width>71</width>
+            <height>22</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>121</width>
-            <height>21</height>
+            <width>71</width>
+            <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>122</width>
-            <height>21</height>
+            <width>71</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="CF2">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>50</y>
+            <width>51</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>90</y>
+            <width>51</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+          <property name="text">
+           <string>MHz    </string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="w3close">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>10</y>
+            <width>21</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>21</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>21</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 0, 0);
+</string>
+          </property>
+          <property name="text">
+           <string>x</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>130</y>
+            <width>51</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+          <property name="text">
+           <string>MHz    </string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QWidget" name="widget_4" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>271</width>
+           <height>171</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>271</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(111, 111, 111);</string>
+         </property>
+         <widget class="QLabel" name="PlotSet">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>221</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Plot Settings</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="Theme">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Theme</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="Grid">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Grid</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="Theme1">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>50</y>
+            <width>120</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="Grid1">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>120</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="Cursor">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>20</height>
            </size>
           </property>
           <property name="text">
-           <string>Window Size</string>
+           <string>Cursors</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="Cursor1">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>130</y>
+            <width>120</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QWidget" name="widget_5" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>271</width>
+           <height>171</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>271</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(111, 111, 111);</string>
+         </property>
+         <widget class="QLabel" name="FFTSet">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>221</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>FFT Settings</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="FFT">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>9999</width>
+            <height>9999</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>FFT</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="FFT1">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>50</y>
+            <width>120</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="WSizeL">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>120</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>999</width>
+            <height>999</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Windowing</string>
           </property>
          </widget>
          <widget class="QComboBox" name="WSize">
           <property name="geometry">
            <rect>
-            <x>160</x>
-            <y>160</y>
-            <width>121</width>
+            <x>140</x>
+            <y>130</y>
+            <width>120</width>
             <height>22</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </size>
           </property>
@@ -371,188 +695,50 @@
            <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
-         <widget class="QLabel" name="Span">
+         <widget class="QLabel" name="Average">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>200</y>
-            <width>121</width>
-            <height>21</height>
+            <x>10</x>
+            <y>90</y>
+            <width>120</width>
+            <height>20</height>
            </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>500</width>
-            <height>500</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Span</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="lineEdit">
-          <property name="geometry">
-           <rect>
-            <x>160</x>
-            <y>200</y>
-            <width>121</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="frame">
-           <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_2">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>240</y>
-            <width>121</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Theme</string>
-          </property>
-         </widget>
-         <widget class="QComboBox" name="comboBox">
-          <property name="geometry">
-           <rect>
-            <x>160</x>
-            <y>240</y>
-            <width>121</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>22</height>
-           </size>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="ValClose">
-          <property name="geometry">
-           <rect>
-            <x>270</x>
-            <y>10</y>
-            <width>20</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>22</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_3">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>280</y>
-            <width>121</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>121</width>
-            <height>21</height>
-           </size>
           </property>
           <property name="text">
            <string>Average</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="lineEdit_2">
+         <widget class="QComboBox" name="AVG1">
           <property name="geometry">
            <rect>
-            <x>160</x>
-            <y>280</y>
-            <width>121</width>
+            <x>140</x>
+            <y>90</y>
+            <width>120</width>
             <height>22</height>
            </rect>
           </property>
           <property name="minimumSize">
            <size>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>121</width>
+            <width>120</width>
             <height>22</height>
            </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(149, 149, 149);</string>
           </property>
          </widget>
         </widget>
        </item>
-       <item row="0" column="0">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QWidget" name="widget_2" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -562,42 +748,238 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>1221</width>
+        <width>891</width>
         <height>41</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>41</height>
+        <height>70</height>
        </size>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true">background: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 255), stop:1 rgba(255, 255, 255, 255))</string>
+       <string notr="true">background-color: rgb(111, 111, 111);</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="ValOpen">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="22">
+        <widget class="QPushButton" name="Export">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Export</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLineEdit" name="MP1">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="15" colspan="2">
+        <widget class="QLabel" name="C1_2">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Horizontal Delta</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="Peak_Freq">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="10">
+        <widget class="QLabel" name="C2FQ2">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
            <height>22</height>
           </size>
          </property>
          <property name="text">
-          <string>Settings</string>
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="12">
+        <widget class="QLineEdit" name="FQ1">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="Peak">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Peak:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10">
+        <widget class="QLabel" name="FQ2">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QPushButton" name="startButton">
+        <widget class="QLineEdit" name="RBW1">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>22</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>81</width>
-           <height>23</height>
+           <width>60</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="20">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="8">
+        <widget class="QLabel" name="C1">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Cursor 1:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="21">
+        <widget class="QPushButton" name="startButton">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -608,12 +990,18 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="1" column="22">
         <widget class="QPushButton" name="StopButton">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>81</width>
-           <height>23</height>
+           <width>80</width>
+           <height>20</height>
           </size>
          </property>
          <property name="acceptDrops">
@@ -633,8 +1021,293 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="21">
+        <widget class="QPushButton" name="Settings">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Settings</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
-        <spacer name="horizontalSpacer">
+        <widget class="QLabel" name="RBW">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>RBW:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="14">
+        <widget class="QLabel" name="MP2">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="17">
+        <widget class="QLineEdit" name="VertDeltBox">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="16">
+        <widget class="QLabel" name="HorzDeltaLabel">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLineEdit" name="Peak_Pwr">
+         <property name="minimumSize">
+          <size>
+           <width>62</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>62</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="14">
+        <widget class="QLabel" name="C2MP2">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="12">
+        <widget class="QLineEdit" name="C2FQ1">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="PeakFreqLabel">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="RBW2">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Hz</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="8">
+        <widget class="QLabel" name="C2">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Cursor 2:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLabel" name="PeakPwrLabel">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="9">
+        <widget class="QLineEdit" name="C2MP1">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="17">
+        <widget class="QLabel" name="VertDelta">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Vertical Delta</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="15">
+        <widget class="QLineEdit" name="HorzDeltaBox">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -646,11 +1319,45 @@
          </property>
         </spacer>
        </item>
+       <item row="1" column="18">
+        <widget class="QLabel" name="VertDeltaLabel">
+         <property name="minimumSize">
+          <size>
+           <width>25</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>22</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
       </layout>
-      <zorder>StopButton</zorder>
-      <zorder>startButton</zorder>
-      <zorder>ValOpen</zorder>
-      <zorder>horizontalSpacer</zorder>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCustomPlot" name="customPlot1" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>891</width>
+        <height>468</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(111, 111, 111);</string>
+      </property>
      </widget>
     </item>
    </layout>
@@ -660,8 +1367,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1243</width>
-     <height>19</height>
+     <width>1325</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
